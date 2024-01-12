@@ -33,7 +33,7 @@ section
   flex-wrap: wrap;
   overflow: hidden;
 }
-section::before 
+/* section::before 
 {
   content: '';
   position: absolute;
@@ -41,7 +41,7 @@ section::before
   height: 100%;
   background: linear-gradient(hsla(0, 1%, 81%, 0.06),hsla(0, 0%, 0%, 0.449));
   animation: animate 7s linear infinite;
-}
+} */
 
 .inputBox i{
     color:rgb(187, 211, 51);
