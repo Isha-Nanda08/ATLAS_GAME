@@ -9,15 +9,22 @@
 }
 body 
 {
+  
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   /* background:transparent; */
-  background-image:url('https://upload.wikimedia.org/wikipedia/commons/4/41/Simple_world_map.svg');
+  background-image:url('Screenshot\ 2024-01-18\ 200709.png');
   /* z-index: 1; */
   /* opacity: -1; */
-  /* background-repeat: no-repeat; */
+  background-color: hsla(0, 3%, 58%, 0.282);
+  /* background-color: hsla(0, 1%, 45%, 0.116); */
+background-repeat: no-repeat;
+background-attachment:fixed;
+background-blend-mode:lighten;
+background-size: cover;
+
 
 }
 body
