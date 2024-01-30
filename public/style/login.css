@@ -15,7 +15,7 @@ body
   align-items: center;
   min-height: 100vh;
   /* background:transparent; */
-  background-image:url('Screenshot\ 2024-01-18\ 200709.png');
+  background-image:url('./../Screenshot\ 2024-01-18\ 200709.png');
   /* z-index: 1; */
   /* opacity: -1; */
   background-color: hsla(0, 3%, 58%, 0.282);
