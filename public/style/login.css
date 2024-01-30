@@ -9,15 +9,22 @@
 }
 body 
 {
+  
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   /* background:transparent; */
-  background-image:url('https://upload.wikimedia.org/wikipedia/commons/4/41/Simple_world_map.svg');
+  background-image:url('./../Screenshot\ 2024-01-18\ 200709.png');
   /* z-index: 1; */
   /* opacity: -1; */
-  /* background-repeat: no-repeat; */
+  background-color: hsla(0, 3%, 58%, 0.282);
+  /* background-color: hsla(0, 1%, 45%, 0.116); */
+background-repeat: no-repeat;
+background-attachment:fixed;
+background-blend-mode:lighten;
+background-size: cover;
+
 
 }
 body
@@ -33,7 +40,7 @@ section
   flex-wrap: wrap;
   overflow: hidden;
 }
-section::before 
+/* section::before 
 {
   content: '';
   position: absolute;
@@ -41,7 +48,7 @@ section::before
   height: 100%;
   background: linear-gradient(hsla(0, 1%, 81%, 0.06),hsla(0, 0%, 0%, 0.449));
   animation: animate 7s linear infinite;
-}
+} */
 
 .inputBox i{
     color:rgb(187, 211, 51);
@@ -83,14 +90,36 @@ section span:hover
     text-align: center;
 
 }
-.start button{
+/* .start button{
     background-color: rgb(187, 211, 51);
     border: none;
     text-align: center;
     font-size: 1.5rem;
     font-weight: bold;
     letter-spacing: 1px;
+} */
+
+
+.start:hover, .start:focus{
+  box-shadow: inset 0 0 0 2em yellow;
+  background-color: transparent;
+  color: rgb(187, 211, 51);
+  border: 2px solid rgb(11, 11, 11);
 }
+
+
+.start:hover, 
+.start:focus {
+  animation: pulse 1s;
+  box-shadow: 0 0 0 2em transparent;
+}
+
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 yellow; }
+}
+
+
  section .signin
 {
   position: absolute;
