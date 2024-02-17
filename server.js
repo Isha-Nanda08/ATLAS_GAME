@@ -1,8 +1,9 @@
-import express from "express"
-import bodyParser from "body-parser"
-import axios from "axios"
-import { Player, Bot } from "./player";
-import Room from "./room";
+import express from "express";
+import bodyParser from "body-parser";
+import axios from "axios";
+import { Player, Bot } from "./player.js";
+import Room from "./room.js";
+import os from "os";
 
 const port = 3090;
 const app = express();
@@ -10,29 +11,69 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-var rooms = []
+var rooms = [];
 
-app.post("/createRoom", (req, res) => {
-    const newCreator = new Player(req.body.username)
-    const newRoom = new Room(rooms.length, req.body.password, req.body.roomname, newCreator);
-    rooms.push(newRoom);
-    // go to room admin page!! with player list and option to start room
-})
+async function getLocalIpAddress() {
+  return new Promise((resolve, reject) => {
+    const interfaces = os.networkInterfaces();
+    const interfaceKeys = Object.keys(interfaces);
 
-app.get("/joinRoom", (req, res) => {
-    // render rooms list with all available rooms
-})
+    for (const intf of interfaceKeys) {
+      for (const alias of interfaces[intf]) {
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+          resolve(alias.address);
+          return;
+        }
+      }
+    }
 
-app.post("/joinRoom", (req, res) => {
-    const roomId = parseInt(req.body.roomid);
-    const newPlayer = new Player(req.body.username)
-    const selectedRoom = rooms[roomId];
-    selectedRoom.addPlayer(newPlayer);
-    // go to room admin page
-})
+    reject(new Error('Unable to determine local IP address.'));
+  });
+}
 
-app.get("/room/:id", (req, res) => { 
-    // player is viewing a room
-})
+async function startServer() {
+  try {
+    const localIp = await getLocalIpAddress();
 
-app.listen(port, () => { console.log(`Game running at port: ${port}`) })
+    app.get("/hello", (req, res) => {
+      res.send("yes");
+    });
+
+    app.get("/roomList", (req, res) => {
+      res.send({rooms: rooms});
+    })
+
+    app.post("/createRoom", (req, res) => {
+      // const newCreator = new Player(req.body.username);
+      // const newRoom = new Room(rooms.length, req.body.password, req.body.roomname, newCreator);
+      // rooms.push(newRoom);
+      // // go to room admin page!! with player list and option to start room
+      console.log(req.body);
+    });
+
+    app.get("/joinRoom", (req, res) => {
+      // render rooms list with all available rooms
+      res.json({ hello: "accepted" });
+    });
+
+    app.post("/joinRoom", (req, res) => {
+      const roomId = parseInt(req.body.roomid);
+      const newPlayer = new Player(req.body.username);
+      const selectedRoom = rooms[roomId];
+      selectedRoom.addPlayer(newPlayer);
+      // go to room admin page
+    });
+
+    app.get("/room/:id", (req, res) => {
+      // player is viewing a room
+    });
+
+    app.listen(port, () => {
+      console.log(`Game running at http://${localIp}:${port}`);
+    });
+  } catch (error) {
+    console.error('Error getting local IP address:', error);
+  }
+}
+
+startServer();

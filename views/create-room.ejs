@@ -56,26 +56,33 @@
 
         <h2>LET'S GO</h2>
 
-        <form class="form" action="/lobby" method="post">
-
+        <form class="form" action="/createRoom" method="post">
           <div class="inputBox">
-            <input type="text" required> <i>username</i>
+            <input type="text" name="username" required> <i>username</i>
           </div>
-          <div class="dropdown">
-            <div class="dropbtn">Select Room</div>
-            <div class="dropdown-content">
-            <%if (locals.rooms) {%>
-              <% for (var i = 0; i < locals.rooms.length; i++) { %>
-                <a href="#"><%= locals.rooms[i].name %></a>
-              <% } %>
-            <% } %>
-            </div>
+          <div class="inputBox">
+            <input type="text" name="roomname" required> <i>Room Name</i>
           </div>
-          <button class="start" type="submit">Join</button>
-          <div class="create-room-text"><a href="/createRoom">Create Room</a></div>
+          <div class="inputBox">
+            <input type="text" name="password" required> <i>Password</i>
+          </div>
+          <div class="check">
+            <input type="checkbox" name="enableBot"> <i>Do you want to include bot?</i>
+          </div>
+          <div class="inputBox">
+            <input type="text" name="botdifficulty" min="1" max="100" value="0" required> <i>Difficulty (in %)</i>
+          </div>
+
+
+          <button class="start" type="submit">Create</button>
+          <div class="create-room-text"><a href="/">Join Room</a></div>
+
         </form>
+
       </div>
+
     </div>
+
   </section>
 
 </body>
