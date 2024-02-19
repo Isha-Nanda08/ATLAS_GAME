@@ -67,15 +67,18 @@
             <input type="text" name="password" required> <i>Password</i>
           </div>
           <div class="check">
-            <input type="checkbox" name="enableBot"> <i>Do you want to include bot?</i>
+            <input type="checkbox" id="enableBot" name="enableBot"> <i>Do you want to include bot?</i>
           </div>
-          <div class="inputBox">
-            <input type="text" name="botdifficulty" min="1" max="100" value="0" required> <i>Difficulty (in %)</i>
+          <div class="inputBox botDifficulty" style="display:none;">
+            <input type="text" name="botDifficulty" min="1" max="100" value="0" required> <i>Difficulty (in %)</i>
           </div>
-
-
           <button class="start" type="submit">Create</button>
           <div class="create-room-text"><a href="/">Join Room</a></div>
+          <% if (locals.err) { %>
+            <div class="error-message">
+              <p><%= err %></p>
+            </div>
+          <% } %>
 
         </form>
 
@@ -84,7 +87,17 @@
     </div>
 
   </section>
+<script>
+  const enableBotCheckbox = document.getElementById('enableBot');
+  const botDifficultyDiv = document.querySelector('.botDifficulty');
 
+  enableBotCheckbox.addEventListener('change', function() {
+    botDifficultyDiv.style.display = this.checked ? 'block' : 'none';
+    if (!this.checked) {
+      document.getElementById('botDifficultyInput').value = '0';
+    }
+  });
+</script>
 </body>
 
 </html>

@@ -10,6 +10,7 @@ const rl = readline.createInterface({ //interface to read from the terminal
     output: process.stdout
 });
 let serverPort;
+let userId, roomId;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -20,7 +21,11 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/lobby", (req, res) => {
-    res.render("game-room.ejs")
+    if (userId !== undefined && userId !== null && roomId !== undefined && roomId !== null) {
+        res.render("game-room.ejs");
+    } else {
+        res.redirect("/");
+    }
 })
 
 app.get("/game", (req, res) => {
@@ -35,12 +40,26 @@ app.post("/createRoom", async (req, res) => {
     let userName = req.body.username;
     let roomName = req.body.roomname;
     let password = req.body.password;
+    let botEnable = req.body.enableBot;
+    let botDifficulty = req.body.botdifficulty;
 
-    await axios.post(`${serverPort}/createRoom`, {
+    const response = await axios.post(`${serverPort}/createRoom`, {
         roomName:  roomName,
         password: password,
-        userName: userName
+        userName: userName,
+        botEnable: botEnable,
+        botDifficulty: botDifficulty
+    }, {
+        headers: { 'Content-Type': 'application/json' }
     });
+    
+    if (response.data.roomId == -1) {
+        res.render("create-room.ejs", {err: "room-name already in use"})
+    } else {
+        roomId = response.data.roomId;
+        userId = response.data.userId;
+        res.redirect(`/lobby`)
+    }
 })
 
 app.listen(port, () => { 

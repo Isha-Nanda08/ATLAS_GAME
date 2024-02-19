@@ -8,6 +8,7 @@ import os from "os";
 const port = 3090;
 const app = express();
 
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -44,11 +45,26 @@ async function startServer() {
     })
 
     app.post("/createRoom", (req, res) => {
-      // const newCreator = new Player(req.body.username);
-      // const newRoom = new Room(rooms.length, req.body.password, req.body.roomname, newCreator);
-      // rooms.push(newRoom);
-      // // go to room admin page!! with player list and option to start room
-      console.log(req.body);
+      const newCreator = new Player(req.body.userName);
+      const roomName = req.body.roomName
+      const newRoom = new Room(rooms.length, req.body.password, roomName, newCreator);
+
+      let isMatch = false; // check if room name exists
+      for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].name == roomName) {
+          isMatch = true;
+          break;
+        }
+      }
+
+      if (isMatch) {
+        res.send({roomId: -1});
+      } else {
+        rooms.push(newRoom);
+        // go to room admin page!! with player list and option to start room
+        console.log(newCreator.id);
+        res.send({roomId: 1});
+      }
     });
 
     app.get("/joinRoom", (req, res) => {
