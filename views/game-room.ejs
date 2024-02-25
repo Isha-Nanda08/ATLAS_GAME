@@ -10,15 +10,15 @@
     <section>
     <div class="content">
         <div class="selected-room">
-            <p><span>SELECTED ROOM</span></p>
+            <p><span><%= roomName %></span></p>
         </div>
         <div class="players">
             <div class="player-info">
-            <p class="created">created by: <span>🎖️player1</span></p>
-            <div class="player-list"><ul>🎖️player2</ul>
-                <ul>🎖️player3</ul>
-                <ul>🎖️player3</ul>
-                <ul>🎖️player4</ul>
+            <p class="created">created by: <span>🎖️<%= creator %></span></p>
+            <div class="player-list">
+                <% for (let i=0; i<players.length; i++) { %>
+                    <ul>🎖️p<%= players[i] %></ul>
+                <% } %>
             </div>
         </div>
             <div class="globe">

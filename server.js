@@ -62,8 +62,7 @@ async function startServer() {
       } else {
         rooms.push(newRoom);
         // go to room admin page!! with player list and option to start room
-        console.log(newCreator.id);
-        res.send({roomId: 1});
+        res.send({roomId: newRoom.id, userId: newCreator.id});
       }
     });
 
@@ -75,17 +74,37 @@ async function startServer() {
     app.post("/joinRoom", (req, res) => {
       const roomId = parseInt(req.body.roomid);
       const newPlayer = new Player(req.body.username);
+      const password = req.body.password;
+
       const selectedRoom = rooms[roomId];
-      selectedRoom.addPlayer(newPlayer);
-      // go to room admin page
+      if (selectedRoom != undefined && selectedRoom != null) {
+        if (selectedRoom.password == password) {
+          selectedRoom.addPlayer(newPlayer);
+          res.json({roomId: selectedRoom.id, userId: newPlayer.id});
+        } else {
+          res.json({ err: "incorrect password" });
+        }
+      } else {
+        res.json({ err: "room not selected" });
+      }
     });
 
     app.get("/room/:id", (req, res) => {
-      // player is viewing a room
+      const roomId = req.params.id;
+      const room = rooms[roomId];
+
+      const roomName = room.name;
+      const creator = room.creator.name;
+      const players = room.allPlayers.slice(1).map(player => player.name);
+      res.json({
+        roomName: roomName,
+        creator: creator,
+        players: players
+      });
     });
 
     app.listen(port, () => {
-      console.log(`Game running at http://${localIp}:${port}`);
+      console.log(`Game server running at http://${localIp}:${port}`);
     });
   } catch (error) {
     console.error('Error getting local IP address:', error);

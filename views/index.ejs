@@ -56,28 +56,57 @@
 
         <h2>LET'S GO</h2>
 
-        <form class="form" action="/lobby" method="post">
+        <form class="form" action="/" method="post">
 
           <div class="inputBox">
-            <input type="text" required> <i>username</i>
+            <input type="text" name="userName" required> <i>username</i>
           </div>
+          
           <div class="dropdown">
             <div class="dropbtn">Select Room</div>
             <div class="dropdown-content">
             <%if (locals.rooms) {%>
               <% for (var i = 0; i < locals.rooms.length; i++) { %>
-                <a href="#"><%= locals.rooms[i].name %></a>
+                <a onclick="selectRoom('<%= i %>')"><%= locals.rooms[i].name %></a>
               <% } %>
+              <select style="display: none;" name="roomId" id="roomDropdown">
+                <% for (var i = 0; i < locals.rooms.length; i++) { %>
+                  <option value="<%= i %>"></option>
+                <% } %>
+              </select>
             <% } %>
             </div>
           </div>
+
+          <div class="inputBox">
+            <input type="text" name="password" required> <i>room password</i>
+          </div>
+
           <button class="start" type="submit">Join</button>
           <div class="create-room-text"><a href="/createRoom">Create Room</a></div>
+          <% if (locals.err) { %>
+            <div class="error-text">
+              <%= err %>
+            </div>
+          <% } %>
         </form>
       </div>
     </div>
   </section>
 
 </body>
+<script>
+  function selectRoom(index) {
+        var dropdown = document.getElementById('roomDropdown');
+        var options = dropdown.getElementsByTagName('option');
 
+        // Uncheck all options
+        for (var i = 0; i < options.length; i++) {
+            options[i].selected = false;
+        }
+
+        // Check the corresponding option
+        options[index].selected = true;
+    }
+</script>
 </html>

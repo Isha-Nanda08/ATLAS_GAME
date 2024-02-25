@@ -79,12 +79,6 @@ background-position: center center;
 background-repeat: no-repeat;
 
 animation: bg-spin 3s linear infinite;
-
-
-
-&:hover {
-  animation-play-state: paused;
-}
 }
 @keyframes bg-spin {
     to {
