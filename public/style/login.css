@@ -9,7 +9,6 @@
 }
 
 body {
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,6 +28,7 @@ body {
 }
 
 body section {
+
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -40,7 +40,7 @@ body section {
   overflow: hidden;
 }
 
-/* section::before 
+/* section::before
 {
   content: '';
   position: absolute;
@@ -149,6 +149,7 @@ section .signin .content {
   gap: 40px;
 }
 
+
 section .signin .content h2 {
   font-size: 2em;
   color: #fff;
@@ -197,6 +198,7 @@ section .signin .content .form .inputBox i {
   color: #fff;
 }
 
+
 .signin .content .form .links {
   position: relative;
   width: 100%;
@@ -239,7 +241,6 @@ section .signin .content .form .inputBox i {
     height: calc(10vw - 2px);
   }
 }
-
 @media (max-width: 600px) {
   section span {
     width: calc(20vw - 2px);
