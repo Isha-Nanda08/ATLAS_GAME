@@ -32,6 +32,12 @@ async function getLocalIpAddress() {
   });
 }
 
+function refreshAll(playerList) {
+  playerList.forEach((player) => {
+    axios.post(`${player.ip}/refresh`)
+  })
+}
+
 async function startServer() {
   try {
     const localIp = await getLocalIpAddress();
@@ -45,8 +51,8 @@ async function startServer() {
     })
 
     app.post("/createRoom", (req, res) => {
-      const newCreator = new Player(req.body.userName);
-      const roomName = req.body.roomName
+      const newCreator = new Player(req.body.userName, req.body.userIp);
+      const roomName = req.body.roomName;
       const newRoom = new Room(rooms.length, req.body.password, roomName, newCreator);
 
       let isMatch = false; // check if room name exists
@@ -63,17 +69,18 @@ async function startServer() {
         rooms.push(newRoom);
         // go to room admin page!! with player list and option to start room
         res.send({roomId: newRoom.id, userId: newCreator.id});
+        
       }
     });
 
-    app.get("/joinRoom", (req, res) => {
-      // render rooms list with all available rooms
-      res.json({ hello: "accepted" });
-    });
+    // app.get("/joinRoom", (req, res) => {
+    //   // render rooms list with all available rooms
+    //   res.json({ hello: "accepted" });
+    // });
 
     app.post("/joinRoom", (req, res) => {
       const roomId = parseInt(req.body.roomid);
-      const newPlayer = new Player(req.body.username);
+      const newPlayer = new Player(req.body.username, req.body.userIp);
       const password = req.body.password;
 
       const selectedRoom = rooms[roomId];
@@ -81,6 +88,7 @@ async function startServer() {
         if (selectedRoom.password == password) {
           selectedRoom.addPlayer(newPlayer);
           res.json({roomId: selectedRoom.id, userId: newPlayer.id});
+          refreshAll(selectedRoom.allPlayers)
         } else {
           res.json({ err: "incorrect password" });
         }

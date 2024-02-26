@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import readline from 'readline';
 import axios from "axios";
+import os from "os";
 
 const port = 3000;
 const app = express();
@@ -11,6 +12,40 @@ const rl = readline.createInterface({ //interface to read from the terminal
 });
 let serverPort = 'http://localhost:3090'; //NOTE: if server port is changed make changes here
 let userId, roomId;
+let localIp = `http://localhost:${port}`;
+
+async function getLocalIpAddress() {
+    return new Promise((resolve, reject) => {
+      const interfaces = os.networkInterfaces();
+      const interfaceKeys = Object.keys(interfaces);
+  
+      for (const intf of interfaceKeys) {
+        for (const alias of interfaces[intf]) {
+          if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+            resolve(alias.address);
+            return;
+          }
+        }
+      }
+  
+      reject(new Error('Unable to determine local IP address.'));
+    });
+}
+
+function takeInput() {
+    rl.question('Enter server socket: ', async (input) => {
+        serverPort = input;
+
+        try {
+            const response = await axios.get(serverPort + '/hello');
+            console.log("connection established");
+            rl.close();
+        } catch (error) {
+            console.error('Error: failed to connect');
+            takeInput();
+        }
+    });
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -53,7 +88,8 @@ app.post("/createRoom", async (req, res) => {
         password: password,
         userName: userName,
         botEnable: botEnable,
-        botDifficulty: botDifficulty
+        botDifficulty: botDifficulty,
+        userIp: localIp
     }, {
         headers: { 'Content-Type': 'application/json' }
     });
@@ -73,12 +109,13 @@ app.post("/", async (req, res) => {
     let roomNo = req.body.roomId;
     let password = req.body.password;
 
-    console.log(userName+" "+password+" "+roomNo);
+    // console.log(userName+" "+password+" "+roomNo);
 
     const response = await axios.post(`${serverPort}/joinRoom`, {
         roomid: roomNo,
         username: userName,
         password: password,
+        userIp: localIp
     }, {
         headers: { 'Content-Type': 'application/json' }
     });
@@ -86,7 +123,7 @@ app.post("/", async (req, res) => {
     if (response.data.err == null || response.data.err == undefined) {
         roomId = response.data.roomId;
         userId = response.data.userId;
-        console.log(`roomID: ${roomId}, playerID: ${userId}`)
+        // console.log(`roomID: ${roomId}, playerID: ${userId}`)
         res.redirect(`/lobby`)
     } else {
         const response2 = await (await axios.get(serverPort + "/roomList")).data.rooms;
@@ -94,22 +131,13 @@ app.post("/", async (req, res) => {
     }
 })
 
-app.listen(port, () => { 
-    console.log(`Game running at: http://localhost:${port}`);
-    takeInput();    
+app.post('/refresh', () => {
+    location.reload();
 })
 
-function takeInput() {
-    rl.question('Enter server socket: ', async (input) => {
-        serverPort = input;
-
-        try {
-            const response = await axios.get(serverPort + '/hello');
-            console.log("connection established");
-            rl.close();
-        } catch (error) {
-            console.error('Error: failed to connect');
-            takeInput();
-        }
-    });
-}
+app.listen(port, async () => { 
+    localIp = await getLocalIpAddress();
+    localIp = `http://${localIp}:${port}`
+    console.log(`Game running at: http://localhost:${port}`);
+    takeInput();
+})

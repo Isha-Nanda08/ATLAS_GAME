@@ -1,9 +1,11 @@
 class Player {
-    constructor(name) {
+    constructor(name, ip) {
         this.id = -1;
         this.name = name;
         this.lives = 3;
         this.roomID = -1;
+        this.hints = 2;
+        this.ip = ip;
     }
 }
 
