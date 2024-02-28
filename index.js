@@ -155,7 +155,7 @@ app.post("/lobby", (req, res) => {
             headers: { 'Content-Type': 'application/json' }
         })
         roomId = undefined; userId = undefined;
-        res.redirect("/")
+        res.redirect("/");
     }
 })
 
