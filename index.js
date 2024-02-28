@@ -3,16 +3,22 @@ import express from "express";
 import readline from 'readline';
 import axios from "axios";
 import os from "os";
+import http from 'http';
+import {Server} from 'socket.io';
 
 const port = 3000;
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const rl = readline.createInterface({ //interface to read from the terminal
     input: process.stdin,
     output: process.stdout
 });
+
 let serverPort = 'http://localhost:3090'; //NOTE: if server port is changed make changes here
 let userId, roomId;
 let localIp = `http://localhost:${port}`;
+
 
 async function getLocalIpAddress() {
     return new Promise((resolve, reject) => {
@@ -61,7 +67,13 @@ app.get("/", async (req, res) => {
 
 app.get("/lobby", async (req, res) => {
     if (userId !== undefined && userId !== null && roomId !== undefined && roomId !== null) {
-        const response = await axios.get(`${serverPort}/room/${roomId}`);
+        const response = await axios.get(`${serverPort}/room`, {
+            roomId:  roomId,
+            userIp: localIp
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        userId = response.data.userId;
         res.render("game-room.ejs", response.data);
     } else {
         res.redirect("/");
@@ -131,11 +143,28 @@ app.post("/", async (req, res) => {
     }
 })
 
-app.post('/refresh', () => {
-    location.reload();
+app.post("/lobby", (req, res) => {
+    const action = req.body.action;
+    if (action == 'start') {
+        console.log('start game')
+    } else {
+        axios.post(`${serverPort}/leaveRoom`, {
+            roomId: roomId,
+            userId: userId,
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        })
+        roomId = undefined; userId = undefined;
+        res.redirect("/")
+    }
 })
 
-app.listen(port, async () => { 
+app.post('/refresh', () => {
+    io.emit('update', "dataUpdate")
+    res.json("accepted");
+})
+
+server.listen(port, async () => { 
     localIp = await getLocalIpAddress();
     localIp = `http://${localIp}:${port}`
     console.log(`Game running at: http://localhost:${port}`);

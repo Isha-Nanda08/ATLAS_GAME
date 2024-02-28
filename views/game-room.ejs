@@ -31,11 +31,18 @@
             </div>
         
         </div>
-        <div class="buttons">
-            <button class="start-game">start</button>
-            <button class="leave-room">leave room</button>
+        <form class="buttons" action="/lobby" method="post">
+            <button class="start-game" name="action" type="submit" value="start">start</button>
+            <button class="leave-room" name="action" type="submit" value="leave">leave room</button>
         </div>
     </div>
 </section>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('update', (data) => {
+      location.reload()
+    });
+  </script>
 </html>

@@ -97,9 +97,17 @@ async function startServer() {
       }
     });
 
-    app.get("/room/:id", (req, res) => {
-      const roomId = req.params.id;
+    app.get("/room", (req, res) => {
+      const roomId = req.body.roomId;
+      const userIp = req.body.userIp;
+      let newId;
       const room = rooms[roomId];
+
+      for (let i=0; i<room.allPlayers.length; i++) {
+        if (room.allPlayers[i].ip == userIp) {
+          newId = i;
+        }
+      }
 
       const roomName = room.name;
       const creator = room.creator.name;
@@ -107,9 +115,17 @@ async function startServer() {
       res.json({
         roomName: roomName,
         creator: creator,
-        players: players
+        players: players,
+        userId: newId
       });
     });
+
+    app.post("/leaveRoom", (req, res) => {
+      const room = rooms[parseInt(req.body.roomId)];
+      room.allPlayers.splice(parseInt(req.body.userId), 1); // remove the player
+      refreshAll(room.allPlayers);
+      res.json("removed")
+    })
 
     app.listen(port, () => {
       console.log(`Game server running at http://${localIp}:${port}`);
