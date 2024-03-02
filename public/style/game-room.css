@@ -79,12 +79,6 @@ background-position: center center;
 background-repeat: no-repeat;
 
 animation: bg-spin 3s linear infinite;
-
-
-
-&:hover {
-  animation-play-state: paused;
-}
 }
 @keyframes bg-spin {
     to {
@@ -195,23 +189,25 @@ initial-value: 0turn;
 .buttons{
     /* background-color:rgb(187, 211, 51) ; */
     margin-top: 2rem;
-    bottom: 10px;
-    display: grid;
+    /* bottom: 10px; */
+    width: 100%;
+    display: flex;
+    /* border: 2px solid red; */
     /* flex-direction: row; */
-    /* justify-content: space-between; */
+    justify-content: space-around;
     /* align-items: flex-start; */
     /* gap: 6rem; */
     /* flex-grow: 2; */
     /* flgridex */
-    grid-template-columns: 80% 60%;
-    grid-auto-columns: auto;
+    /* grid-template-columns: 80% 60%; */
+    /* grid-auto-columns: auto; */
     /* grid-area: 20%; */
     /* gap: 10px; */
 }
 .leave-room, .start-game{
     cursor: pointer;
     background-color: rgb(187, 211, 51);
-    padding: 1rem;
+    padding: 10px 0px;
     /* padding-left: 2rem; */
     /* margin: 1rem; */
     border-radius: 0px;
@@ -220,13 +216,13 @@ initial-value: 0turn;
     letter-spacing: 1px;
     font-size: 1rem;
     /* width: 50%; */
-    width: 100%;
+    width: 40%;
 }
 
-.leave-room{
-    margin-right: 2rem;
-    margin-left: 0;
-}
+/* .leave-room{ */
+    /* margin-right: 2rem; */
+    /* margin-left: 0; */
+/* } */
 
 .start-game:hover, .start-game:focus,.leave-room:hover,.leave-room:focus{
   box-shadow: inset 0 0 0 2em yellow;

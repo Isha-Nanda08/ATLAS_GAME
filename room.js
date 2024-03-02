@@ -1,20 +1,6 @@
 class Room {
     constructor(id, password, name, creator) {
-        thid.id = id;
-        this.name = name;
-        this.password = password;
-        this.creator = creator;
-        this.status = false; // if the room is running or not
-        // this.hasBot = false;
-
-        this.allPlayers = [];
-        this.livePlayers = [];
-        this.usedPlaces = [];
-        this.currPlayer = -1; // index of current player
-
-        this.addPlayer(creator);
-
-    // ------- functions -------
+        // ------- functions -------
         this.startRoom = () => {
             // room can run only if there are more that 1 players
             this.status = this.allPlayers.length > 1;
@@ -36,6 +22,21 @@ class Room {
             newPlayer.roomID = this.id;
             newPlayer.id = this.allPlayers.length;
         }
+
+        // ------- data -------
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.creator = creator;
+        this.status = false; // if the room is running or not
+        // this.hasBot = false;
+
+        this.allPlayers = [];
+        this.livePlayers = [];
+        this.usedPlaces = [];
+        this.currPlayer = -1; // index of current player
+
+        this.addPlayer(creator);
     }
 }
 
