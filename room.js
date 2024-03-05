@@ -20,7 +20,7 @@ class Room {
             this.livePlayers.push(newPlayer);
 
             newPlayer.roomID = this.id;
-            newPlayer.id = this.allPlayers.length;
+            // newPlayer.id = this.allPlayers.length;
         }
 
         // ------- data -------

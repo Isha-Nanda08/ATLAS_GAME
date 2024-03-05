@@ -5,6 +5,8 @@ import { Player, Bot } from "./player.js";
 import Room from "./room.js";
 import os from "os";
 
+// refresh home page when on home screen - add new room
+
 const port = 3090;
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 var rooms = [];
+var newRoomId = 0;
+var homePagePlayers = []
 
 async function getLocalIpAddress() {
   return new Promise((resolve, reject) => {
@@ -49,11 +53,23 @@ async function startServer() {
     app.get("/roomList", (req, res) => {
       res.send({rooms: rooms});
     })
+    
+    app.post("/atHome", (req, res) => {
+      const ip = req.body.playerIp
+      homePagePlayers = homePagePlayers.filter(item => item.ip !== ip);
+      homePagePlayers.push({ip: ip});
+      res.send("ok");
+    })
 
-    app.post("/createRoom", (req, res) => {
+    app.post("/notAtHome", (req, res) => {
+      homePagePlayers = homePagePlayers.filter(item => item.ip !== req.body.playerIp);
+      res.send("ok");
+    })
+
+    app.get("/createRoom", (req, res) => {
       const newCreator = new Player(req.body.userName, req.body.userIp);
       const roomName = req.body.roomName;
-      const newRoom = new Room(rooms.length, req.body.password, roomName, newCreator);
+      const newRoom = new Room(newRoomId++, req.body.password, roomName, newCreator);
 
       let isMatch = false; // check if room name exists
       for (let i = 0; i < rooms.length; i++) {
@@ -67,9 +83,9 @@ async function startServer() {
         res.send({roomId: -1});
       } else {
         rooms.push(newRoom);
-        // go to room admin page!! with player list and option to start room
-        res.send({roomId: newRoom.id, userId: newCreator.id});
-        
+        homePagePlayers = homePagePlayers.filter(item => item.ip !== ip);
+        refreshAll(homePagePlayers);
+        res.send({roomId: newRoom.id});        
       }
     });
 
@@ -83,7 +99,7 @@ async function startServer() {
       const newPlayer = new Player(req.body.username, req.body.userIp);
       const password = req.body.password;
 
-      const selectedRoom = rooms[roomId];
+      const selectedRoom = rooms.find(item => item.id === roomId);
       if (selectedRoom != undefined && selectedRoom != null) {
         if (selectedRoom.password == password) {
           selectedRoom.addPlayer(newPlayer);
@@ -99,15 +115,15 @@ async function startServer() {
 
     app.get("/room", (req, res) => {
       const roomId = req.body.roomId;
-      const userIp = req.body.userIp;
-      let newId;
-      const room = rooms[roomId];
+      // const userIp = req.body.userIp;
+      // let newId;
+      const room = rooms.find(item => item.id === roomId);
 
-      for (let i=0; i<room.allPlayers.length; i++) {
-        if (room.allPlayers[i].ip == userIp) {
-          newId = i;
-        }
-      }
+      // for (let i=0; i<room.allPlayers.length; i++) {
+      //   if (room.allPlayers[i].ip == userIp) {
+      //     newId = i;
+      //   }
+      // }
 
       const roomName = room.name;
       const creator = room.creator.name;
@@ -116,7 +132,7 @@ async function startServer() {
         roomName: roomName,
         creator: creator,
         players: players,
-        userId: newId
+        // userId: newId
       });
     });
 

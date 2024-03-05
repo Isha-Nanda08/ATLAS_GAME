@@ -1,6 +1,6 @@
 class Player {
     constructor(name, ip) {
-        this.id = -1;
+        // this.id = -1;
         this.name = name;
         this.lives = 3;
         this.roomID = -1;
@@ -11,7 +11,7 @@ class Player {
 
 class Bot {
     constructor() {
-        this.id = -1
+        // this.id = -1
         this.name = "Atlas-AI";
         this.lives = 3;
         this.roomID = -1;
