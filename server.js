@@ -5,8 +5,6 @@ import { Player, Bot } from "./player.js";
 import Room from "./room.js";
 import os from "os";
 
-// refresh home page when on home screen - add new room
-
 const port = 3090;
 const app = express();
 
@@ -84,7 +82,7 @@ async function startServer() {
       const newRoom = new Room(newRoomId, req.body.password, roomName, newCreator);
       newRoomId++;
 
-      let isMatch = false; // check if room name exists
+      let isMatch = false;
       for (let i = 0; i < rooms.length; i++) {
         if (rooms[i].name == roomName) {
           isMatch = true;
@@ -119,6 +117,22 @@ async function startServer() {
         res.json({ err: "room not selected" });
       }
     });
+
+    app.get("/room/status/:id", (req, res) => {
+      const roomId = req.params.id;
+      const selectedRoom = rooms.find(r => r.id === parseInt(roomId));
+      res.send(selectedRoom.status);
+    })
+
+    app.post("/startRoom/:id", (req, res) => {
+      const roomId = req.params.id;
+      const selectedRoom = rooms.find(r => r.id === parseInt(roomId));
+      selectedRoom.startRoom();
+      if (selectedRoom.status) {
+        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != creator.ip)); // refresh all except creator
+      }
+      res.send(selectedRoom.status);
+    })
 
     app.post("/leaveRoom", (req, res) => {
       const roomId = parseInt(req.body.roomId);

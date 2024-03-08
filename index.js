@@ -98,15 +98,21 @@ app.post("/", async (req, res) => {
 
 app.get("/lobby", async (req, res) => {
     if (roomId !== undefined && roomId !== null) {
-        const response = await axios.get(`${serverPort}/room`, {
-            params: {
-              roomId: roomId
-            },
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-        res.render("game-room.ejs", response.data);
+        const response2 = await axios.get(serverPort + "/room/status/" + roomId);
+        if (response2.data == true) {
+            res.redirect("/game");
+        } else {
+            const response = await axios.get(`${serverPort}/room`, {
+                params: {
+                  roomId: roomId
+                },
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+            const error = req.query.error || "";
+            res.render("game-room.ejs", {...response.data, error: error});
+        }
     } else {
         res.redirect("/");
     }
@@ -146,10 +152,15 @@ app.post("/createRoom", async (req, res) => {
     }
 })
 
-app.post("/lobby", (req, res) => {
+app.post("/lobby", async (req, res) => {
     const action = req.body.action;
     if (action == 'start') {
-        console.log('start game')
+        const response = await axios.post(`${serverPort}/startRoom/${roomId}`);
+        if (response.data == false) {
+            res.redirect("/lobby?error=insufficient%20players");
+        } else {
+            res.redirect('/game');
+        }
     } else {
         axios.post(`${serverPort}/leaveRoom`, {
             roomId: roomId,
@@ -170,6 +181,6 @@ app.post('/refresh', (req, res) => {
 server.listen(port, async () => { 
     localIp = await getLocalIpAddress();
     localIp = `http://${localIp}:${port}`
-    console.log(`Game running at: http://localhost:${port}`);
+    console.log(`Game running at: http://localhost:${port}  or ${localIp}`);
     takeInput();
 })
