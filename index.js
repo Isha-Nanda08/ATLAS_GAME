@@ -16,9 +16,11 @@ const rl = readline.createInterface({ //interface to read from the terminal
 });
 
 let serverPort = 'http://localhost:3090'; //NOTE: if server port is changed make changes here
-let userId, roomId;
 let localIp = `http://localhost:${port}`;
+let roomId = undefined;
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 async function getLocalIpAddress() {
     return new Promise((resolve, reject) => {
@@ -41,9 +43,8 @@ async function getLocalIpAddress() {
 function takeInput() {
     rl.question('Enter server socket: ', async (input) => {
         serverPort = input;
-
         try {
-            const response = await axios.get(serverPort + '/hello');
+            await axios.get(serverPort + '/hello');
             console.log("connection established");
             rl.close();
         } catch (error) {
@@ -53,28 +54,65 @@ function takeInput() {
     });
 }
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
-
 app.get("/", async (req, res) => {
-    if (userId !== undefined && userId !== null && roomId !== undefined && roomId !== null) {
-        res.redirect("/lobby")
+    if (roomId !== undefined && roomId !== null) {
+        res.redirect("/lobby");
     } else {
-        const response = await (await axios.get(serverPort + "/roomList")).data.rooms;
+        axios.post(serverPort + "/atHome", {
+            playerIp: localIp
+        }, {
+            headers: {'Content-Type': 'application/json'}
+        });
+        const response = (await axios.get(serverPort + "/roomList")).data.rooms;
         res.render("index.ejs", { rooms : response });
     }
 })
 
-app.get("/lobby", async (req, res) => {
-    if (userId !== undefined && userId !== null && roomId !== undefined && roomId !== null) {
-        const response = await axios.get(`${serverPort}/room`, {
-            roomId:  roomId,
-            userIp: localIp
+app.post("/", async (req, res) => {
+    let userName = req.body.userName;
+    let roomNo = req.body.roomId;
+    let password = req.body.password;
+
+    const response = await axios.post(`${serverPort}/joinRoom`, {
+        roomid: roomNo,
+        username: userName,
+        password: password,
+        userIp: localIp
+    }, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (response.data.err == null || response.data.err == undefined) {
+        roomId = response.data.roomId;
+        axios.post(serverPort + "/notAtHome", {
+            playerIp: localIp
         }, {
-            headers: { 'Content-Type': 'application/json' }
+            headers: {'Content-Type': 'application/json'}
         });
-        userId = response.data.userId;
-        res.render("game-room.ejs", response.data);
+        res.redirect(`/lobby`);
+    } else {
+        const response2 = (await axios.get(serverPort + "/roomList")).data.rooms;
+        res.render("index.ejs", { rooms : response2, err: response.data.err });
+    }
+})
+
+app.get("/lobby", async (req, res) => {
+    if (roomId !== undefined && roomId !== null) {
+        const response2 = await axios.get(serverPort + "/room/status/" + roomId);
+        if (response2.data == true) {
+            res.redirect("/game");
+        } else {
+            const response = await axios.get(`${serverPort}/room`, {
+                params: {
+                  roomId: roomId
+                },
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+            const error = req.query.error || "";
+            res.render("game-room.ejs", {...response.data, error: error});
+        }
     } else {
         res.redirect("/");
     }
@@ -92,8 +130,8 @@ app.post("/createRoom", async (req, res) => {
     let userName = req.body.username;
     let roomName = req.body.roomname;
     let password = req.body.password;
-    let botEnable = req.body.enableBot;
-    let botDifficulty = req.body.botdifficulty;
+    let botEnable = req.body.enableBot == "on" ? true : false ; 
+    let botDifficulty = req.body.botdifficulty || 0;
 
     const response = await axios.post(`${serverPort}/createRoom`, {
         roomName:  roomName,
@@ -110,56 +148,32 @@ app.post("/createRoom", async (req, res) => {
         res.render("create-room.ejs", {err: "room-name already in use"})
     } else {
         roomId = response.data.roomId;
-        userId = response.data.userId;
-        // console.log(`roomID: ${roomId}, playerID: ${userId}`)
         res.redirect(`/lobby`)
     }
 })
 
-app.post("/", async (req, res) => {
-    let userName = req.body.userName;
-    let roomNo = req.body.roomId;
-    let password = req.body.password;
-
-    // console.log(userName+" "+password+" "+roomNo);
-
-    const response = await axios.post(`${serverPort}/joinRoom`, {
-        roomid: roomNo,
-        username: userName,
-        password: password,
-        userIp: localIp
-    }, {
-        headers: { 'Content-Type': 'application/json' }
-    });
-    
-    if (response.data.err == null || response.data.err == undefined) {
-        roomId = response.data.roomId;
-        userId = response.data.userId;
-        // console.log(`roomID: ${roomId}, playerID: ${userId}`)
-        res.redirect(`/lobby`)
-    } else {
-        const response2 = await (await axios.get(serverPort + "/roomList")).data.rooms;
-        res.render("index.ejs", { rooms : response2, err: response.data.err });
-    }
-})
-
-app.post("/lobby", (req, res) => {
+app.post("/lobby", async (req, res) => {
     const action = req.body.action;
     if (action == 'start') {
-        console.log('start game')
+        const response = await axios.post(`${serverPort}/startRoom/${roomId}`);
+        if (response.data == false) {
+            res.redirect("/lobby?error=insufficient%20players");
+        } else {
+            res.redirect('/game');
+        }
     } else {
         axios.post(`${serverPort}/leaveRoom`, {
             roomId: roomId,
-            userId: userId,
+            playerIp: localIp
         }, {
             headers: { 'Content-Type': 'application/json' }
         })
-        roomId = undefined; userId = undefined;
+        roomId = undefined;
         res.redirect("/");
     }
 })
 
-app.post('/refresh', () => {
+app.post('/refresh', (req, res) => {
     io.emit('update', "dataUpdate")
     res.json("accepted");
 })
@@ -167,6 +181,6 @@ app.post('/refresh', () => {
 server.listen(port, async () => { 
     localIp = await getLocalIpAddress();
     localIp = `http://${localIp}:${port}`
-    console.log(`Game running at: http://localhost:${port}`);
+    console.log(`Game running at: http://localhost:${port}  or ${localIp}`);
     takeInput();
 })

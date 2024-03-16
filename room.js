@@ -1,3 +1,5 @@
+import { Bot } from "./player.js";
+
 class Room {
     constructor(id, password, name, creator) {
         // ------- functions -------
@@ -5,22 +7,34 @@ class Room {
             // room can run only if there are more that 1 players
             this.status = this.allPlayers.length > 1;
             if (this.status) {
+                for (let i=0; i<this.allPlayers.length; i++) {
+                    this.livePlayers.push(this.allPlayers[i]);
+                }
                 // select random player to start game with
                 this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
             }
             return this.status;
         };
+
+        this.changeCreator = () => {
+            let i = 0;
+            while (true) {
+                if  (this.allPlayers[i].ip != creator.ip && !(this.allPlayers[i] instanceof Bot)) {
+                    this.creator = this.allPlayers[i];
+                    break;
+                }
+                i++;
+            }
+        }
+
         // this.addBot = () => {};
         this.getNextPlayer = () => {
             this.currPlayer = (this.currPlayer + 1) % this.livePlayers;
-            // if (this.currPlayer)
+            // if (this.currPlayer) curr player is bot
         };
         this.addPlayer = (newPlayer) => {
             this.allPlayers.push(newPlayer);
-            this.livePlayers.push(newPlayer);
-
             newPlayer.roomID = this.id;
-            newPlayer.id = this.allPlayers.length;
         }
 
         // ------- data -------

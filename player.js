@@ -1,6 +1,5 @@
 class Player {
     constructor(name, ip) {
-        this.id = -1;
         this.name = name;
         this.lives = 3;
         this.roomID = -1;
@@ -10,12 +9,12 @@ class Player {
 }
 
 class Bot {
-    constructor() {
-        this.id = -1
+    constructor(difficulty) {
+        // this.id = -1
         this.name = "Atlas-AI";
         this.lives = 3;
         this.roomID = -1;
-        this.difficulty = 0; // max difficulty = 100 => unbeatable
+        this.difficulty = difficulty; // max difficulty = 100 => unbeatable
 
         this.makeGuess = (character, usedPLaces) => {
             if (Math.random() * 100 <= this.difficulty) { // bot gives correct answer

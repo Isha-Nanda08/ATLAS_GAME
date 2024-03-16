@@ -17,7 +17,7 @@
             <p class="created">created by: <span>🎖️<%= creator %></span></p>
             <div class="player-list">
                 <% for (let i=0; i<players.length; i++) { %>
-                    <ul>🎖️p<%= players[i] %></ul>
+                    <ul>🎖️<%= players[i] %></ul>
                 <% } %>
             </div>
         </div>
@@ -30,6 +30,9 @@
                 </div>
             </div>
         
+        </div>
+        <div class="error-text">
+            <%= error %>
         </div>
         <form class="buttons" action="/lobby" method="post">
             <button class="start-game" name="action" type="submit" value="start">start</button>

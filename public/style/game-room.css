@@ -242,3 +242,10 @@ initial-value: 0turn;
   0% { box-shadow: 0 0 0 yellow; }
 }
 
+.error-text {
+  color: crimson;
+  font-weight: bold;
+  text-shadow: 0px 0px 10px rgba(187, 211, 51, 0.65);
+  text-align: center;
+  margin: 0; padding: 0;
+}

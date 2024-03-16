@@ -67,11 +67,11 @@
             <div class="dropdown-content">
             <%if (locals.rooms) {%>
               <% for (var i = 0; i < locals.rooms.length; i++) { %>
-                <a onclick="selectRoom('<%= i %>')"><%= locals.rooms[i].name %></a>
+                <a onclick="selectRoom('<%= i %>')" href="#"><%= locals.rooms[i].name %></a>
               <% } %>
               <select style="display: none;" name="roomId" id="roomDropdown">
                 <% for (var i = 0; i < locals.rooms.length; i++) { %>
-                  <option value="<%= i %>"></option>
+                  <option value="<%= locals.rooms[i].id %>"></option>
                 <% } %>
               </select>
             <% } %>
@@ -95,7 +95,12 @@
   </section>
 
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 <script>
+  const socket = io();
+    socket.on('update', (data) => {
+      location.reload()
+    });
   function selectRoom(index) {
         var dropdown = document.getElementById('roomDropdown');
         var options = dropdown.getElementsByTagName('option');
@@ -107,6 +112,6 @@
 
         // Check the corresponding option
         options[index].selected = true;
-    }
+  }
 </script>
 </html>
