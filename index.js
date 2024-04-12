@@ -26,7 +26,6 @@ async function getLocalIpAddress() {
     return new Promise((resolve, reject) => {
       const interfaces = os.networkInterfaces();
       const interfaceKeys = Object.keys(interfaces);
-  
       for (const intf of interfaceKeys) {
         for (const alias of interfaces[intf]) {
           if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
