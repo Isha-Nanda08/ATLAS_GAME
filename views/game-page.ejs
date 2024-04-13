@@ -12,10 +12,21 @@
         <h1>ATLAS-MANIA</h1>
         <div class="player-info">
             <ul>
-                <% for (let i=0; i<room.allPlayers.length; i++) { %>
-                    <li><p class="nameP">🎖️isha<span class="status">⏳🚩▶️</span></p>
-                        <p>❤️2 lives</p>  
-                        <button class="on ">💡Hint(2)</button></li>
+                <% for (let i=0; i<allPlayers.length; i++) { %>
+                    <% let currPlayer = allPlayers[i]; %>
+                    <li>
+                        <p class="nameP">🎖️<%= currPlayer.name %>
+                            <div class="status">
+                                <!-- ⏳ this is timer -->
+                                <% if (!livePlayers.some(player => currPlayer.name != "Atlas-AI" && player.ip == currPlayer.ip)) { %>
+                                    🚩
+                                <% } %>
+                                <% if (!hasTurn) { %> ▶️ <% } %>
+                            </div>
+                        </p>
+                        <p>❤️<%= allPlayers[i].lives %> lives</p>  
+                        <button class="on ">💡Hints(<%= currPlayer.hints %>)</button>
+                    </li>
                 <% } %>
             <ul>
                 
@@ -23,10 +34,10 @@
         
         
         <div class="fun-fact">
-            <p class="room-name">room</p>
+            <p class="room-name"><%= name %></p>
             <p><span class="prev-player">previous-player:whesks</span> <span class="prev-word">word spoken: <span>India</span></span></p>
-            <p><span class="current-player">current-player:isha </span> <span class="current-alpha">current alphabet :</p>
-            <p class="alpha">A</p>
+            <p><span class="current-player">current-player: <% livePlayers[currPlayer].name %> </span> <span class="current-alpha">current alphabet :</p>
+            <p class="alpha"><%= currChar %></p>
             <div class="box-in">
             
                 <input placeholder="enter region " class="input-count" name="text" type="text">

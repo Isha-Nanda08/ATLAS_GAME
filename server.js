@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 let rooms = [
-  new Room(1000, "abcd", "roomName1", new Player("Tarush", "http://12.12.11.1"))
+  new Room(1000, "abcd", "test room", new Player("Test person", "http://12.12.1.1:9090"))
 ];
 let newRoomId = 0;
 let homePagePlayers = [];
@@ -158,8 +158,9 @@ async function startServer() {
       res.json("removed");
     })
 
-    app.get("gameUpdate", (req, res) => {
-      const roomId  = parseInt(req.query.roomId);
+    app.get("/gameUpdate/:id", (req, res) => {
+      console.log("this was pinged!!!!")
+      const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       res.send({room: selectedRoom});
     })

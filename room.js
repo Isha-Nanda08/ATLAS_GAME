@@ -48,7 +48,8 @@ class Room {
         this.allPlayers = [];
         this.livePlayers = [];
         this.usedPlaces = [];
-        this.currPlayer = -1; // index of current player
+        this.currPlayer = -1; // id of current player
+        this.currChar = "a";
 
         this.addPlayer(creator);
     }

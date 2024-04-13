@@ -5,6 +5,8 @@ import axios from "axios";
 import os from "os";
 import http from 'http';
 import {Server} from 'socket.io';
+import { Player, Bot } from "./player.js";
+import { isDataView } from "util/types";
 
 const port = 3000;
 const app = express();
@@ -119,12 +121,10 @@ app.get("/lobby", async (req, res) => {
 
 app.get("/game", async (req, res) => {
     // check game status also
-    // const response = await axios.get(`${serverPort}/gameUpdate`, {
-    //     roomId: roomId
-    // }, {
-    //     headers: { 'Content-Type': 'application/json' }
-    // });
-    res.render("game-page.ejs");
+    const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
+    const data = response.data.room;
+    let turnIp = data.livePlayers[data.currPlayer].ip;
+    res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
 })
 
 app.get("/createRoom", (req, res) => {
