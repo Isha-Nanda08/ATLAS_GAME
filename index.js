@@ -110,18 +110,25 @@ app.get("/lobby", async (req, res) => {
                 }
               });
             const error = req.query.error || "";
-            res.render("game-room.ejs", {...response.data, error: error});
+            res.render("game-room.ejs", {...response.data, error: error, isCreator: (response.data.creatorIp == localIp)});
         }
     } else {
         res.redirect("/");
     }
 })
 
-app.get("/game", (req, res) => {
-    res.render("game-page.ejs")
+app.get("/game", async (req, res) => {
+    // check game status also
+    // const response = await axios.get(`${serverPort}/gameUpdate`, {
+    //     roomId: roomId
+    // }, {
+    //     headers: { 'Content-Type': 'application/json' }
+    // });
+    res.render("game-page.ejs");
 })
 
 app.get("/createRoom", (req, res) => {
+    // TODO: send notAtHomePg req
     res.render("create-room.ejs")
 })
 

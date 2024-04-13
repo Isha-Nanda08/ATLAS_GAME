@@ -38,7 +38,9 @@ async function getLocalIpAddress() {
 
 function refreshAll(playerList) {
   playerList.forEach((player) => {
-    axios.post(`${player.ip}/refresh`)
+    if (player instanceof Player) {
+      axios.post(`${player.ip}/refresh`)
+    }
   })
 }
 
@@ -52,13 +54,15 @@ async function startServer() {
 
     app.post("/atHome", (req, res) => {
       const ip = req.body.playerIp
-      homePagePlayers = homePagePlayers.filter(item => item.ip !== ip);
+      homePagePlayers = homePagePlayers.filter(item => item.ip !== ip); // to remove duplicasies on refreshing
       homePagePlayers.push({ip: ip});
+      console.log("player: " + ip + " joined at home page")
       res.send("ok");
     })
 
     app.post("/notAtHome", (req, res) => {
       homePagePlayers = homePagePlayers.filter(item => item.ip !== req.body.playerIp);
+      console.log("player: " + req.body.playerIp + " left home page")
       res.send("ok");
     })
 
@@ -72,11 +76,13 @@ async function startServer() {
       res.json({
         roomName: selectedRoom.name,
         creator: selectedRoom.creator.name,
-        players: selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip).map(player => player.name)
+        players: selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip).map(player => player.name),
+        creatorIp: selectedRoom.creator.ip
       });
     });    
 
     app.post("/createRoom", (req, res) => {
+      console.log(`${homePagePlayers.length} players at home pg`)
       const newCreator = new Player(req.body.userName, req.body.userIp);
       const roomName = req.body.roomName;
       const newRoom = new Room(newRoomId, req.body.password, roomName, newCreator);
@@ -127,9 +133,10 @@ async function startServer() {
     app.post("/startRoom/:id", (req, res) => {
       const roomId = req.params.id;
       const selectedRoom = rooms.find(r => r.id === parseInt(roomId));
+      console.log(selectedRoom)
       selectedRoom.startRoom();
       if (selectedRoom.status) {
-        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != creator.ip)); // refresh all except creator
+        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip)); // refresh all except creator
       }
       res.send(selectedRoom.status);
     })
@@ -149,6 +156,12 @@ async function startServer() {
 
       refreshAll(selectedRoom.allPlayers);
       res.json("removed");
+    })
+
+    app.get("gameUpdate", (req, res) => {
+      const roomId  = parseInt(req.query.roomId);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      res.send({room: selectedRoom});
     })
 
     app.listen(port, () => {
