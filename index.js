@@ -120,11 +120,47 @@ app.get("/lobby", async (req, res) => {
 })
 
 app.get("/game", async (req, res) => {
-    // check game status also
-    const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
-    const data = response.data.room;
-    let turnIp = data.livePlayers[data.currPlayer].ip;
-    res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
+    // TODO: check game status also
+    if (roomId == undefined || roomId == null) {
+        res.redirect('/');
+    } else {
+        const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
+        const data = response.data.room;
+        if (data.status) {
+            let turnIp = data.livePlayers[data.currPlayer].ip;
+            if (data.checkWinner()) {
+                res.redirect("/winnerPage");
+            } else {
+                res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
+            }
+        } else {
+            res.redirect("/lobby")
+        }
+    }
+})
+
+app.post("/game", async (req, res) => {
+    if (req.body.action == "submit") {
+        axios.post(`${serverPort}/gameUpdate/`+roomId, {
+            params: {
+              sender: localIp,
+              locationInp: req.body.locationInp,
+              action: req.body.action
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
+    } else {
+        axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
+            params: {
+              sender: localIp,
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
+    }
 })
 
 app.get("/createRoom", (req, res) => {

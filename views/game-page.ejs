@@ -13,19 +13,19 @@
         <div class="player-info">
             <ul>
                 <% for (let i=0; i<allPlayers.length; i++) { %>
-                    <% let currPlayer = allPlayers[i]; %>
+                    <% let currentPlayer = allPlayers[i]; %>
                     <li>
-                        <p class="nameP">🎖️<%= currPlayer.name %>
+                        <p class="nameP">🎖️<%= currentPlayer.name %>
                             <div class="status">
                                 <!-- ⏳ this is timer -->
-                                <% if (!livePlayers.some(player => currPlayer.name != "Atlas-AI" && player.ip == currPlayer.ip)) { %>
+                                <% if (!livePlayers.some(player => currentPlayer.name != "Atlas-AI" && player.ip == currentPlayer.ip)) { %>
                                     🚩
                                 <% } %>
-                                <% if (!hasTurn) { %> ▶️ <% } %>
+                                <% if (currentPlayer.ip == livePlayers[currPlayer].ip) { %> ▶️ <% } %>
                             </div>
                         </p>
-                        <p>❤️<%= allPlayers[i].lives %> lives</p>  
-                        <button class="on ">💡Hints(<%= currPlayer.hints %>)</button>
+                        <p>❤️<%= currentPlayer.lives %> lives</p>  
+                        <button class="on ">💡Hints(<%= currentPlayer.hints %>)</button>
                     </li>
                 <% } %>
             <ul>
@@ -35,21 +35,33 @@
         
         <div class="fun-fact">
             <p class="room-name"><%= name %></p>
-            <p><span class="prev-player">previous-player:whesks</span> <span class="prev-word">word spoken: <span>India</span></span></p>
-            <p><span class="current-player">current-player: <% livePlayers[currPlayer].name %> </span> <span class="current-alpha">current alphabet :</p>
-            <p class="alpha"><%= currChar %></p>
-            <div class="box-in">
-            
-                <input placeholder="enter region " class="input-count" name="text" type="text">
-                <p><button class="submit">submit
-                    <span class="first"></span>
-                    <span class="second"></span>
-                    <span class="third"></span>
-                    <span class="fourth"></span>
-                    </button></p>
-            </div>
-
-            <div class="leave-btn"><button class="leave">leave-room</button></div>
+            <p><span class="prev-player">next-player: <%= livePlayers[(currPlayer+1)%livePlayers.length].name %></span> <span class="prev-word">
+                word spoken: <span><%= currWord %></span></span></p>
+            <p><span class="current-player">current-player: <%= livePlayers[currPlayer].name %> </span> <span class="current-alpha">current alphabet :</p>
+                <div id="timer-box">time left: <span class="time">10:00</span></div>
+            <p class="alpha"><%= currWord[currWord.length - 1] %></p>
+            <% if (hasTurn) { %>
+                <form class="box-in" action="/game" method="post">
+                    <input placeholder="enter region " class="input-count" name="locationInp" type="text">
+                    
+                    <p><button type="submit" name="action" class="submit" value="submit">submit
+                        <span class="first"></span>
+                        <span class="second"></span>
+                        <span class="third"></span>
+                        <span class="fourth"></span>
+                    </button>
+                    <% if (livePlayers[currPlayer].hints > 0) { %>
+                    <button class="submit" type="submit" name="action" value="hint">hint
+                        <span class="first"></span>
+                        <span class="second"></span>
+                        <span class="third"></span>
+                        <span class="fourth"></span>
+                    </button>
+                    <% } %>
+                </p>
+            </from>
+            <% } %>
+            <!-- <div class="leave-btn"><button class="leave">leave-room</button></div> -->
         </div>
 
         <div class="map-svg">
@@ -58,4 +70,11 @@
         <div class="current-loc"></div>
     </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('update', (data) => {
+      location.reload()
+    });
+</script>
 </html>

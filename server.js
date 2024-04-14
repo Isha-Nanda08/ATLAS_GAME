@@ -165,6 +165,48 @@ async function startServer() {
       res.send({room: selectedRoom});
     })
 
+    app.post("/gameUpdate/:id", async (req, res) => {
+      const roomId  = parseInt(req.params.id);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      const ans = req.body.locationInp.toLowerCase();
+      const locationInvalid = true; 
+      const response = await axios.post("http://localhost:3080/location", {
+        params: {
+          location: ans
+        }, headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      // name invalid, starting char invalid
+      locationInvalid = (response.error == undefined) || ans[0] == selectedRoom.currWord[selectedRoom.currWord.length - 1];
+      if (locationInvalid || ans == "pass") {
+        // TODO send a message
+        selectedRoom.reduceCurrLive();
+      } else if (ans == "quit") {
+        selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
+        selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+        selectedRoom.getNextPlayer();
+        // TODO check if only 1 player is left or not
+      } else if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) {
+          let placeUnused = selectedRoom.updateGame(ans);
+          if (!placeUnused) {
+            // TODO send message
+            selectedRoom.reduceCurrLive()
+          }
+        // TODO: timeup!!
+        // TODO refresh all
+      }
+      refreshAll(selectedRoom.allPlayers);
+    })
+
+    app.post("/gameUpdate/hint/:id", async (req, res) => {
+      const roomId  = parseInt(req.params.id);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
+      selectedRoom.getNextPlayer();
+      refreshAll(selectedRoom.allPlayers);
+    })
+
     app.listen(port, () => {
       console.log(`Game server running at http://${localIp}:${port}`);
     });
@@ -174,3 +216,6 @@ async function startServer() {
 }
 
 startServer();
+
+
+// todo destroy toom when creator exits winner room
