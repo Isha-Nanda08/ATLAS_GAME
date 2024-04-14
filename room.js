@@ -56,9 +56,9 @@ class Room {
             selectedRoom.getNextPlayer();
         }
 
-        this.checkWinner = () => {
-            return this.livePlayers.length == 1;
-        }
+        // this.checkWinner = () => {
+        //     return this.livePlayers.length == 1;
+        // }
 
         // ------- data -------
         this.id = id;

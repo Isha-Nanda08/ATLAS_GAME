@@ -128,7 +128,7 @@ app.get("/game", async (req, res) => {
         const data = response.data.room;
         if (data.status) {
             let turnIp = data.livePlayers[data.currPlayer].ip;
-            if (data.checkWinner()) {
+            if (data.livePlayers.length == 1) {
                 res.redirect("/winnerPage");
             } else {
                 res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
