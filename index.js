@@ -5,6 +5,8 @@ import axios from "axios";
 import os from "os";
 import http from 'http';
 import {Server} from 'socket.io';
+import { Player, Bot } from "./player.js";
+import { isDataView } from "util/types";
 
 const port = 3000;
 const app = express();
@@ -110,18 +112,59 @@ app.get("/lobby", async (req, res) => {
                 }
               });
             const error = req.query.error || "";
-            res.render("game-room.ejs", {...response.data, error: error});
+            res.render("game-room.ejs", {...response.data, error: error, isCreator: (response.data.creatorIp == localIp)});
         }
     } else {
         res.redirect("/");
     }
 })
 
-app.get("/game", (req, res) => {
-    res.render("game-page.ejs")
+app.get("/game", async (req, res) => {
+    // TODO: check game status also
+    if (roomId == undefined || roomId == null) {
+        res.redirect('/');
+    } else {
+        const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
+        const data = response.data.room;
+        if (data.status) {
+            let turnIp = data.livePlayers[data.currPlayer].ip;
+            if (data.checkWinner()) {
+                res.redirect("/winnerPage");
+            } else {
+                res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
+            }
+        } else {
+            res.redirect("/lobby")
+        }
+    }
+})
+
+app.post("/game", async (req, res) => {
+    if (req.body.action == "submit") {
+        axios.post(`${serverPort}/gameUpdate/`+roomId, {
+            params: {
+              sender: localIp,
+              locationInp: req.body.locationInp,
+              action: req.body.action
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
+    } else {
+        axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
+            params: {
+              sender: localIp,
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
+    }
 })
 
 app.get("/createRoom", (req, res) => {
+    // TODO: send notAtHomePg req
     res.render("create-room.ejs")
 })
 

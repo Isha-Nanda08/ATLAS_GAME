@@ -10,7 +10,6 @@ class Player {
 
 class Bot {
     constructor(difficulty) {
-        // this.id = -1
         this.name = "Atlas-AI";
         this.lives = 3;
         this.roomID = -1;

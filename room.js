@@ -37,6 +37,29 @@ class Room {
             newPlayer.roomID = this.id;
         }
 
+        this.updateGame = (location) => {
+            if (this.usedPlaces[location[0]].includes(location)) {
+                return false;
+            }
+            this.usedPlaces[location[0]].push(location);
+            this.currWord = location;
+            getNextPlayer();
+            return true;
+        }
+
+        this.reduceCurrLive = () => {
+            this.livePlayers[this.currPlayer].lives--;
+            if (this.livePlayers[this.currPlayer].lives < 0) {
+                selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
+                selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+            }
+            selectedRoom.getNextPlayer();
+        }
+
+        this.checkWinner = () => {
+            return this.livePlayers.length == 1;
+        }
+
         // ------- data -------
         this.id = id;
         this.name = name;
@@ -47,8 +70,15 @@ class Room {
 
         this.allPlayers = [];
         this.livePlayers = [];
-        this.usedPlaces = [];
-        this.currPlayer = -1; // index of current player
+        this.usedPlaces = {
+            "a":[],"b":[],"c":[],"d":[],"e":[],"f":[],
+            "g":[],"h":[],"i":[],"j":[],"k":[],"l":[],
+            "m":[],"n":[],"o":[],"p":[],"q":[],"r":[],
+            "s":[],"t":[],"u":[],"v":[],"w":[],"x":[],
+            "y":[],"z":[]
+        };
+        this.currPlayer = -1; // id of current player
+        this.currWord = "a";
 
         this.addPlayer(creator);
     }

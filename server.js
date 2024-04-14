@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 let rooms = [
-  new Room(1000, "abcd", "roomName1", new Player("Tarush", "http://12.12.11.1"))
+  new Room(1000, "abcd", "test room", new Player("Test person", "http://12.12.1.1:9090"))
 ];
 let newRoomId = 0;
 let homePagePlayers = [];
@@ -38,7 +38,9 @@ async function getLocalIpAddress() {
 
 function refreshAll(playerList) {
   playerList.forEach((player) => {
-    axios.post(`${player.ip}/refresh`)
+    if (player instanceof Player) {
+      axios.post(`${player.ip}/refresh`)
+    }
   })
 }
 
@@ -52,13 +54,15 @@ async function startServer() {
 
     app.post("/atHome", (req, res) => {
       const ip = req.body.playerIp
-      homePagePlayers = homePagePlayers.filter(item => item.ip !== ip);
+      homePagePlayers = homePagePlayers.filter(item => item.ip !== ip); // to remove duplicasies on refreshing
       homePagePlayers.push({ip: ip});
+      console.log("player: " + ip + " joined at home page")
       res.send("ok");
     })
 
     app.post("/notAtHome", (req, res) => {
       homePagePlayers = homePagePlayers.filter(item => item.ip !== req.body.playerIp);
+      console.log("player: " + req.body.playerIp + " left home page")
       res.send("ok");
     })
 
@@ -72,11 +76,13 @@ async function startServer() {
       res.json({
         roomName: selectedRoom.name,
         creator: selectedRoom.creator.name,
-        players: selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip).map(player => player.name)
+        players: selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip).map(player => player.name),
+        creatorIp: selectedRoom.creator.ip
       });
     });    
 
     app.post("/createRoom", (req, res) => {
+      console.log(`${homePagePlayers.length} players at home pg`)
       const newCreator = new Player(req.body.userName, req.body.userIp);
       const roomName = req.body.roomName;
       const newRoom = new Room(newRoomId, req.body.password, roomName, newCreator);
@@ -127,9 +133,10 @@ async function startServer() {
     app.post("/startRoom/:id", (req, res) => {
       const roomId = req.params.id;
       const selectedRoom = rooms.find(r => r.id === parseInt(roomId));
+      console.log(selectedRoom)
       selectedRoom.startRoom();
       if (selectedRoom.status) {
-        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != creator.ip)); // refresh all except creator
+        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip)); // refresh all except creator
       }
       res.send(selectedRoom.status);
     })
@@ -151,6 +158,55 @@ async function startServer() {
       res.json("removed");
     })
 
+    app.get("/gameUpdate/:id", (req, res) => {
+      console.log("this was pinged!!!!")
+      const roomId  = parseInt(req.params.id);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      res.send({room: selectedRoom});
+    })
+
+    app.post("/gameUpdate/:id", async (req, res) => {
+      const roomId  = parseInt(req.params.id);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      const ans = req.body.locationInp.toLowerCase();
+      const locationInvalid = true; 
+      const response = await axios.post("http://localhost:3080/location", {
+        params: {
+          location: ans
+        }, headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      // name invalid, starting char invalid
+      locationInvalid = (response.error == undefined) || ans[0] == selectedRoom.currWord[selectedRoom.currWord.length - 1];
+      if (locationInvalid || ans == "pass") {
+        // TODO send a message
+        selectedRoom.reduceCurrLive();
+      } else if (ans == "quit") {
+        selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
+        selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+        selectedRoom.getNextPlayer();
+        // TODO check if only 1 player is left or not
+      } else if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) {
+          let placeUnused = selectedRoom.updateGame(ans);
+          if (!placeUnused) {
+            // TODO send message
+            selectedRoom.reduceCurrLive()
+          }
+        // TODO: timeup!!
+        // TODO refresh all
+      }
+      refreshAll(selectedRoom.allPlayers);
+    })
+
+    app.post("/gameUpdate/hint/:id", async (req, res) => {
+      const roomId  = parseInt(req.params.id);
+      const selectedRoom = rooms.find(item => item.id == roomId);
+      selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
+      selectedRoom.getNextPlayer();
+      refreshAll(selectedRoom.allPlayers);
+    })
+
     app.listen(port, () => {
       console.log(`Game server running at http://${localIp}:${port}`);
     });
@@ -160,3 +216,6 @@ async function startServer() {
 }
 
 startServer();
+
+
+// todo destroy toom when creator exits winner room
