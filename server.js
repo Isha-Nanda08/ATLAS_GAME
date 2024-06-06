@@ -170,32 +170,35 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       const ans = req.body.locationInp.toLowerCase();
       const locationInvalid = true; 
-      const response = await axios.post("http://localhost:3080/location", {
-        params: {
-          location: ans
-        }, headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      // name invalid, starting char invalid
-      locationInvalid = (response.error == undefined) || ans[0] == selectedRoom.currWord[selectedRoom.currWord.length - 1];
-      if (locationInvalid || ans == "pass") {
-        // TODO send a message
-        selectedRoom.reduceCurrLive();
-      } else if (ans == "quit") {
-        selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
-        selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
-        selectedRoom.getNextPlayer();
-        // TODO check if only 1 player is left or not
-      } else if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) {
-          let placeUnused = selectedRoom.updateGame(ans);
-          if (!placeUnused) {
-            // TODO send message
-            selectedRoom.reduceCurrLive()
-          }
-        // TODO: timeup!!
-        // TODO refresh all
+      try {
+        const response = await axios.post("http://localhost:3080/location", {
+            location: ans
+          }, { 
+            headers: { 'Content-Type': 'application/json' }
+        });
+        console.log(response.data);
+      } catch (err) {
+        console.log(err.message);
       }
+      // // name invalid, starting char invalid
+      // locationInvalid = (response.error == undefined) || ans[0] == selectedRoom.currWord[selectedRoom.currWord.length - 1];
+      // if (locationInvalid || ans == "pass") {
+      //   // TODO send a message
+      //   selectedRoom.reduceCurrLive();
+      // } else if (ans == "quit") {
+      //   selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
+      //   selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+      //   selectedRoom.getNextPlayer();
+      //   // TODO check if only 1 player is left or not
+      // } else if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) {
+      //     let placeUnused = selectedRoom.updateGame(ans);
+      //     if (!placeUnused) {
+      //       // TODO send message
+      //       selectedRoom.reduceCurrLive()
+      //     }
+      //   // TODO: timeup!!
+      //   // TODO refresh all
+      // }
       refreshAll(selectedRoom.allPlayers);
     })
 

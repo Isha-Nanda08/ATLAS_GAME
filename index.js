@@ -142,14 +142,11 @@ app.get("/game", async (req, res) => {
 app.post("/game", async (req, res) => {
     if (req.body.action == "submit") {
         axios.post(`${serverPort}/gameUpdate/`+roomId, {
-            params: {
-              sender: localIp,
-              locationInp: req.body.locationInp,
-              action: req.body.action
-            },
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            sender: localIp,
+            locationInp: req.body.locationInp,
+            action: req.body.action
+        }, {
+            headers: { 'Content-Type': 'application/json' }
         });
     } else {
         axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
