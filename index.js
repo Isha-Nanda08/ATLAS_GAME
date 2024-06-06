@@ -1,12 +1,10 @@
+import axios from "axios";
 import bodyParser from "body-parser";
 import express from "express";
-import readline from 'readline';
-import axios from "axios";
-import os from "os";
 import http from 'http';
-import {Server} from 'socket.io';
-import { Player, Bot } from "./player.js";
-import { isDataView } from "util/types";
+import os from "os";
+import readline from 'readline';
+import { Server } from 'socket.io';
 
 const port = 3000;
 const app = express();
@@ -54,7 +52,10 @@ function takeInput() {
         }
     });
 }
-
+app.get("/test", (req,res)=>{
+    res.render("winner.ejs");
+}
+)
 app.get("/", async (req, res) => {
     if (roomId !== undefined && roomId !== null) {
         res.redirect("/lobby");
