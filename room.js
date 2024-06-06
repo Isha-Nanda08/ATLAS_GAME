@@ -29,7 +29,7 @@ class Room {
 
         // this.addBot = () => {};
         this.getNextPlayer = () => {
-            this.currPlayer = (this.currPlayer + 1) % this.livePlayers;
+            this.currPlayer = (this.currPlayer + 1) % this.livePlayers.length;
             // if (this.currPlayer) curr player is bot
         };
         this.addPlayer = (newPlayer) => {
@@ -43,17 +43,17 @@ class Room {
             }
             this.usedPlaces[location[0]].push(location);
             this.currWord = location;
-            getNextPlayer();
+            this.getNextPlayer();
             return true;
         }
 
         this.reduceCurrLive = () => {
             this.livePlayers[this.currPlayer].lives--;
             if (this.livePlayers[this.currPlayer].lives < 0) {
-                selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
-                selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+                this.livePlayers.splice(this.currPlayer, 1);
+                this.currPlayer = this.currPlayer - 1;
             }
-            selectedRoom.getNextPlayer();
+            this.getNextPlayer();
         }
 
         // this.checkWinner = () => {

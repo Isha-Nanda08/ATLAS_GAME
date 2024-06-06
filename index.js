@@ -54,8 +54,8 @@ function takeInput() {
 }
 app.get("/winnerPage", (req,res)=>{
     res.render("winner.ejs");
-}
-)
+})
+
 app.get("/", async (req, res) => {
     if (roomId !== undefined && roomId !== null) {
         console.log(`\nLOG: (at '/') roomId already defined: ${roomId}, redirecting to lobby`)
@@ -176,6 +176,7 @@ app.post("/game", async (req, res) => {
             }
         });
     }
+    res.redirect("/game")
 })
 
 app.get("/createRoom", (req, res) => {

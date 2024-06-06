@@ -159,12 +159,17 @@ async function startServer() {
       const targetIp = req.body.playerIp;
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.allPlayers = selectedRoom.allPlayers.filter(player => player.ip != targetIp);
+      console.log(`\nLog: player: ${targetIp} removed from room ${roomId}`)
       if (selectedRoom.allPlayers.length == 0) { // remove room
+        console.log("   No player left in room, deleting room")
         rooms = rooms.filter(room => room.id != roomId);
       } else if (selectedRoom.allPlayers.length == 1 && selectedRoom.allPlayers[0] instanceof Bot) {
+        console.log("   No player left in room, deleting room")
         rooms = rooms.filter(room => room.id != roomId);
       } else if (selectedRoom.creator.ip == targetIp) { // change leader
+        console.log("   Changing room owner")
         selectedRoom.changeCreator();
+        console.log(`   ${selectedRoom.creator.ip} is new owner`)
       }
 
       refreshAll(selectedRoom.allPlayers);
@@ -172,7 +177,6 @@ async function startServer() {
     })
 
     app.get("/gameUpdate/:id", (req, res) => {
-      // console.log("this was pinged!!!!")
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       res.send({room: selectedRoom});
@@ -182,40 +186,47 @@ async function startServer() {
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       const ans = req.body.locationInp.toLowerCase();
+      if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) { // correct user sent message
 
-      const locationInvalid = true; 
-      try {
+        let locationInvalid = true; 
         const response = await axios.post(`http://localhost:3080/location/${ans}`,);
-        console.log(response.data);
-      } catch (err) {
-        console.log(err.message);
+
+        console.log(`\nLOG: server response for input: ${ans}`)
+        console.log(response.data)
+
+        // name invalid, starting char invalid
+        locationInvalid = (response.data.error) || ans[0] != selectedRoom.currWord[selectedRoom.currWord.length - 1];
+      
+        if (ans == "quit") {
+          console.log(`   user quits, removing user`)
+          selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
+          selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
+          selectedRoom.getNextPlayer();
+          // TODO check if only 1 player is left or not
+        } else if (locationInvalid) { // case of "pass" is included here
+          // TODO send a message
+          console.log((ans == 'pass')? '   user passed' : `   invalid input, ${ans} doesnot exist`)
+          selectedRoom.reduceCurrLive();
+        } else {
+          let placeUnused = selectedRoom.updateGame(ans);
+          if (!placeUnused) {
+            // TODO send message
+            console.log("   place already used")
+            selectedRoom.reduceCurrLive()
+          }
+        }
+        // TODO: timeup!!
+        refreshAll(selectedRoom.allPlayers);
       }
-      // // name invalid, starting char invalid
-      // locationInvalid = (response.error == undefined) || ans[0] == selectedRoom.currWord[selectedRoom.currWord.length - 1];
-      // if (locationInvalid || ans == "pass") {
-      //   // TODO send a message
-      //   selectedRoom.reduceCurrLive();
-      // } else if (ans == "quit") {
-      //   selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
-      //   selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
-      //   selectedRoom.getNextPlayer();
-      //   // TODO check if only 1 player is left or not
-      // } else if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) {
-      //     let placeUnused = selectedRoom.updateGame(ans);
-      //     if (!placeUnused) {
-      //       // TODO send message
-      //       selectedRoom.reduceCurrLive()
-      //     }
-      //   // TODO: timeup!!
-      //   // TODO refresh all
-      // }
-      refreshAll(selectedRoom.allPlayers);
     })
 
     app.post("/gameUpdate/hint/:id", async (req, res) => {
+      console.log('\nLOG: received request for hint')
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
+      //TODO: provide hint.
+      console.log("   skipping current player's turn")
       selectedRoom.getNextPlayer();
       refreshAll(selectedRoom.allPlayers);
     })
@@ -233,3 +244,4 @@ startServer();
 
 
 // todo destroy room when creator exits winner room
+// TODO: update homepage if a room is deleted due to lack of players
