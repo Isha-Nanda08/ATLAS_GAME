@@ -74,7 +74,8 @@
 <script>
     const socket = io();
     socket.on('update', (data) => {
-      location.reload()
+        console.log("update request recieved from client")
+        location.reload()
     });
 </script>
 </html>

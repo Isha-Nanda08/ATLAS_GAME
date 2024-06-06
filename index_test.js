@@ -6,7 +6,7 @@ import os from "os";
 import readline from 'readline';
 import { Server } from 'socket.io';
 
-const port = 3000;
+const port = 3020;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
