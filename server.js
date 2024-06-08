@@ -186,12 +186,12 @@ async function startServer() {
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       const ans = req.body.locationInp.toLowerCase();
-      if (req.body.sender == selectedRoom.livePlayers[selectedRoom.currPlayer].ip) { // correct user sent message
-
+      const player = selectedRoom.livePlayers[selectedRoom.currPlayer]
+      if (req.body.sender == player.ip) { // correct user sent message
         let locationInvalid = true; 
         const response = await axios.post(`http://localhost:3080/location/${ans}`,);
 
-        console.log(`\nLOG: server response for input: ${ans}`)
+        console.log(`\nLOG: api response for input: ${ans}`)
         console.log(response.data)
 
         // name invalid, starting char invalid
@@ -202,17 +202,24 @@ async function startServer() {
           selectedRoom.livePlayers.splice(selectedRoom.currPlayer, 1);
           selectedRoom.currPlayer = selectedRoom.currPlayer - 1;
           selectedRoom.getNextPlayer();
-          // TODO check if only 1 player is left or not
+          selectedRoom.roomLog = `${player.name} quits the game`
         } else if (locationInvalid) { // case of "pass" is included here
-          // TODO send a message
-          console.log((ans == 'pass')? '   user passed' : `   invalid input, ${ans} doesnot exist`)
+          if (ans == 'pass') {
+            console.log('   user passed')
+            selectedRoom.roomLog = `${player.name} passed his turn`
+          } else {
+            selectedRoom.roomLog = `${player.name}'s input: ${ans} is invalid`
+            console.log(`   invalid input, ${ans} doesnot exist`)
+          }
           selectedRoom.reduceCurrLive();
         } else {
           let placeUnused = selectedRoom.updateGame(ans);
           if (!placeUnused) {
-            // TODO send message
+            selectedRoom.roomLog = `${player.name}'s input: ${ans} is already used`
             console.log("   place already used")
             selectedRoom.reduceCurrLive()
+          } else {
+            selectedRoom.roomLog = `${player.name}'s input: ${ans}`
           }
         }
         // TODO: timeup!!
@@ -226,6 +233,7 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
       //TODO: provide hint.
+      selectedRoom.roomLog("player used hint")
       console.log("   skipping current player's turn")
       selectedRoom.getNextPlayer();
       refreshAll(selectedRoom.allPlayers);

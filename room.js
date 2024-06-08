@@ -79,6 +79,7 @@ class Room {
         };
         this.currPlayer = -1; // id of current player
         this.currWord = "a";
+        this.roomLog = "";
 
         this.addPlayer(creator);
     }
