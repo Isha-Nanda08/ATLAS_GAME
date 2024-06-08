@@ -6,7 +6,7 @@ import os from "os";
 import readline from 'readline';
 import { Server } from 'socket.io';
 
-const port = 3000;
+const port = 3020;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -52,15 +52,8 @@ function takeInput() {
         }
     });
 }
-app.get("/winnerPage", async (req,res) => {
-    const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
-    const data = response.data.room;
-    if (!data.status || data.livePlayers.length != 1) {
-        console.log("LOG: (at '/winnerPage') game not concluded, redirecting")
-        res.redirect('/lobby')
-    } else {
-        res.render("winner.ejs", {room: data});
-    }
+app.get("/winnerPage", (req,res)=>{
+    res.render("winner.ejs");
 })
 
 app.get("/", async (req, res) => {

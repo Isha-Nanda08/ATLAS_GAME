@@ -14,14 +14,18 @@
             <ul>
                 <% for (let i=0; i<allPlayers.length; i++) { %>
                     <% let currentPlayer = allPlayers[i]; %>
-                    <li>
+                    <% if (currentPlayer.ip == livePlayers[currPlayer].ip) { %>
+                        <li class="player-active">
+                    <% } else { %>
+                        <li>
+                    <% } %>
+
                         <p class="nameP">🎖️<%= currentPlayer.name %>
                             <div class="status">
-                                <!-- ⏳ this is timer -->
+                                <!-- DEAD PLAYER -->
                                 <% if (!livePlayers.some(player => currentPlayer.name != "Atlas-AI" && player.ip == currentPlayer.ip)) { %>
                                     🚩
                                 <% } %>
-                                <% if (currentPlayer.ip == livePlayers[currPlayer].ip) { %> ▶️ <% } %>
                             </div>
                         </p>
                         <p>❤️<%= currentPlayer.lives %> lives</p>  
@@ -74,7 +78,8 @@
 <script>
     const socket = io();
     socket.on('update', (data) => {
-      location.reload()
+        console.log("update request recieved from client")
+        location.reload()
     });
 </script>
 </html>

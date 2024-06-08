@@ -13,26 +13,24 @@
         <img src="/output-onlinegiftools.gif"  class="bunny-dance" alt="">
         <img src="/djsaur.gif"  class="djsaur-dance" alt="">
         <div class="selected-room">
-            <p><span>Isha ka Room</span></p>
+            <p><span><%= room.name %></span></p>
         </div>
         
         <div class="players">
             <div class="player-info">
-            <p class="winner-name"><span>🎖️Isha Nanda</span></p>
+            <p class="winner-name"><span>🎖️<%= room.livePlayers[0].name %></span></p>
             <div class="player-list">
-               <ul>
-                 <li>Isha</li>
-                 <li>Isha</li>
-                 <li>Isha</li>
-                 <li>Isha</li>
-               </ul>
+                <% for (let i=0; i<room.allPlayers.length; i++) { %>
+                    <% if (room.livePlayers[0].ip != room.allPlayers[i].ip) { %>
+                        <ul>🎖️<%= room.allPlayers[i].name %></ul>
+                    <% } %>
+                <% } %>
             </div>
-        <p class="created">created by: <span>🎖️Isha</span></p>
+        <p class="created">created by: <span>🎖️<%= room.creator.name %></span></p>
         </div>
             <div class="trophy">
                <img src="/trophy-joypixels.gif" class="tophy" alt="">
             </div>
-        
         </div>
         <div class="error-text">
            ERROR!

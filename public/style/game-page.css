@@ -83,7 +83,7 @@ h1{
     display: grid;
     grid-template-columns: repeat(15, 0.10fr);
     grid-template-rows: repeat(1, 1fr);
-    /* grid-gap: 1.5rem;  */
+    grid-gap: 10px; 
     /* grid-column-gap:1.25rem ;
     grid-row-gap: 0.25rem; */
     overflow: hidden;
@@ -408,3 +408,6 @@ button:hover .fourth {
 
 
 
+.player-active {
+    background-color: greenyellow;
+}
