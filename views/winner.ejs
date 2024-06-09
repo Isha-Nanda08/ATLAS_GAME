@@ -13,20 +13,18 @@
         <img src="/output-onlinegiftools.gif"  class="bunny-dance" alt="">
         <img src="/djsaur.gif"  class="djsaur-dance" alt="">
         <div class="selected-room">
-            <p><span><%= room.name %></span></p>
+            <p><span><%= name %></span></p>
         </div>
         
         <div class="players">
             <div class="player-info">
-            <p class="winner-name"><span>🎖️<%= room.livePlayers[0].name %></span></p>
+            <p class="winner-name">Winner: <span>🎖️<%= winner %></span></p>
             <div class="player-list">
-                <% for (let i=0; i<room.allPlayers.length; i++) { %>
-                    <% if (room.livePlayers[0].ip != room.allPlayers[i].ip) { %>
-                        <ul>🎖️<%= room.allPlayers[i].name %></ul>
-                    <% } %>
+                <% for (let i=0; i<players.length; i++) { %>
+                    <ul>🎖️<%= players[i].name %></ul>
                 <% } %>
             </div>
-        <p class="created">created by: <span>🎖️<%= room.creator.name %></span></p>
+        <p class="created">created by: <span>🎖️<%= creator %></span></p>
         </div>
             <div class="trophy">
                <img src="/trophy-joypixels.gif" class="tophy" alt="">
@@ -36,9 +34,9 @@
            ERROR!
         </div>
         <form class="buttons" action="/lobby" method="post">
-            
-            <button class="start-game" name="action" type="submit" value="start">start</button>
-            
+            <% if (isCreator) { %>
+                <button class="start-game" name="action" type="submit" value="restart">play again</button>
+            <% } %>
             <button class="leave-room" name="action" type="submit" value="leave">leave room</button>
         </div>
     </div>

@@ -52,9 +52,24 @@ function takeInput() {
         }
     });
 }
-app.get("/winnerPage", (req,res)=>{
-    res.render("winner.ejs");
+app.get("/winnerPage", async (req,res) => {
+    if (roomId == undefined || roomId == null) {
+        console.log("LOG: (at '/winnerpage') room id not defined, redirecting user")
+        res.redirect("/")
+    } else {
+        const response = await axios.get(`${serverPort}/gameUpdate/`+roomId);
+        const room = response.data.room;
+        if (!room.status || room.livePlayers.length != 1) {
+            console.log("LOG: (at '/winnerPage') game not concluded, redirecting")
+            res.redirect('/lobby')
+        } else {
+            const gameWinner = room.livePlayers[0];
+            const playerList = room.allPlayers.filter(player => player.ip !== room.creator.ip); 
+            res.render("winner.ejs", { creator: room.creator.name, name: room.name, winner: gameWinner.name, players: playerList, isCreator: localIp === room.creator.ip });
+        }
+    }
 })
+
 
 app.get("/", async (req, res) => {
     if (roomId !== undefined && roomId !== null) {
@@ -157,14 +172,19 @@ app.get("/game", async (req, res) => {
 
 app.post("/game", async (req, res) => {
     if (req.body.action == "submit") {
-        console.log(`\nLOG: (at '/game') player clicked submit button, sending ${req.body.locationInp} as input`)
-        axios.post(`${serverPort}/gameUpdate/`+roomId, {
-            sender: localIp,
-            locationInp: req.body.locationInp,
-            action: req.body.action
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
+        const inp = req.body.locationInp;
+        if (inp == null || inp == undefined || inp == '') { // empty input by user
+            res.redirect('/game')
+        } else {
+            console.log(`\nLOG: (at '/game') player clicked submit button, sending ${inp} as input`)
+            axios.post(`${serverPort}/gameUpdate/`+roomId, {
+                sender: localIp,
+                locationInp: inp,
+                action: req.body.action
+            }, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
     } else {
         console.log(`\nLOG: (at '/game') player clicked hint, asking for hint`)
         axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
@@ -229,6 +249,16 @@ app.post("/lobby", async (req, res) => {
             res.redirect("/lobby?error=insufficient%20players");
         } else {
             console.log("       success, game started")
+            res.redirect('/game');
+        }
+    } else if (action == 'restart') {
+        console.log("\nLog: (from '/winnerPage' at '/lobby') sending game restart request...")
+        const response = await axios.post(`${serverPort}/restartRoom/${roomId}`);
+        if (response.data == false) {
+            console.log("       failed, Insufficient players")
+            res.redirect("/winnerPage?error=insufficient%20players");
+        } else {
+            console.log("       success, game restarted")
             res.redirect('/game');
         }
     } else {
