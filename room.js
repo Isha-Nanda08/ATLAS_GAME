@@ -15,6 +15,25 @@ class Room {
             }
             return this.status;
         };
+        
+        this.restartRoom = () => {
+            if (this.livePlayers.length != 1) { return false; }
+            this.livePlayers = [];
+            
+            for (let player of this.allPlayers) {
+                player.reset();
+            }
+            // room can run only if there are more that 1 players
+            this.status = this.allPlayers.length > 1;
+            if (this.status) {
+                for (let i=0; i<this.allPlayers.length; i++) {
+                    this.livePlayers.push(this.allPlayers[i]);
+                }
+                // select random player to start game with
+                this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
+            }
+            return this.status;
+        };
 
         this.changeCreator = () => {
             let i = 0;

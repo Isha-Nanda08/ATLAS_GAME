@@ -154,6 +154,19 @@ async function startServer() {
       res.send(selectedRoom.status);
     })
 
+    app.post("/restartRoom/:id", (req, res) => {
+      const roomId = req.params.id;
+      const selectedRoom = rooms.find(r => r.id === parseInt(roomId));
+      console.log(`\nLOG: restarting room: ${roomId}`)
+      console.log(`   room info: ${selectedRoom.allPlayers}\n`)
+      selectedRoom.restartRoom();
+      if (selectedRoom.status) {
+        console.log("   refreshing all players")
+        refreshAll(selectedRoom.allPlayers.filter(player => player.ip != selectedRoom.creator.ip)); // refresh all except creator
+      }
+      res.send(selectedRoom.status);
+    })
+
     app.post("/leaveRoom", (req, res) => {
       const roomId = parseInt(req.body.roomId);
       const targetIp = req.body.playerIp;
@@ -233,7 +246,7 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
       //TODO: provide hint.
-      selectedRoom.roomLog("player used hint")
+      selectedRoom.roomLog = "player used hint"
       console.log("   skipping current player's turn")
       selectedRoom.getNextPlayer();
       refreshAll(selectedRoom.allPlayers);

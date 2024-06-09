@@ -5,6 +5,11 @@ class Player {
         this.roomID = -1;
         this.hints = 2;
         this.ip = ip;
+        
+        this.reset = () => {
+            this.lives = 2;
+            this.hints = 2;
+        }
     }
 }
 
@@ -21,6 +26,11 @@ class Bot {
             } else { // bot gives incorrect answer
                 return false;
             }
+        }
+
+        this.reset = () => {
+            this.lives = 2;
+            this.hints = 2;
         }
     }
 }
