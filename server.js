@@ -47,9 +47,13 @@ function refreshAll(playerList) {
   })
 }
 
-function giveHint(player, hint) {
-  g(`\nLOG: alerting ${player.ip}`);
-  axios.post(`${player.ip}/hintAlert/${hint}`)
+async function giveHint(usedPlaces, hint) {
+  // console.log(`\nLOG: alerting ${player.ip}`);
+  const response = await axios.get(`http://localhost:3080/starts-with/${hint}`);
+  let list = response.data;
+  list = list.filter(item => !usedPlaces.includes(item.toLowerCase()));
+  if (list.length > 0) { return list[0]; }
+  return null;
 }
 
 function botTurn(room, bot) {
@@ -274,6 +278,7 @@ async function startServer() {
         // res.send("ok")
         // TODO: timeup!!
         refreshAll(selectedRoom.allPlayers);
+        res.send("ok");
 
         if (selectedRoom.livePlayers[selectedRoom.currPlayer].isBot) {
           setTimeout(() => botTurn(selectedRoom, selectedRoom.livePlayers[selectedRoom.currPlayer]), botSleepTime)
@@ -287,10 +292,11 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
       //TODO: provide hint.
-      selectedRoom.roomLog = "player used hint"
-      console.log("   skipping current player's turn")
-      selectedRoom.getNextPlayer();
-      refreshAll(selectedRoom.allPlayers);
+      const ans = await giveHint(selectedRoom.usedPlaces[selectedRoom.currWord[selectedRoom.currWord.length - 1]], selectedRoom.currWord[selectedRoom.currWord.length - 1])
+      if (ans == null) {
+        res.send("no-hint");
+      }
+      res.send(ans);
     })
 
     app.listen(port, () => {

@@ -177,7 +177,7 @@ app.post("/game", async (req, res) => {
             res.redirect('/game')
         } else {
             console.log(`\nLOG: (at '/game') player clicked submit button, sending ${inp} as input`)
-            axios.post(`${serverPort}/gameUpdate/`+roomId, {
+            await axios.post(`${serverPort}/gameUpdate/`+roomId, {
                 sender: localIp,
                 locationInp: inp,
                 action: req.body.action
@@ -185,18 +185,19 @@ app.post("/game", async (req, res) => {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
+        res.redirect("/game")
     } else {
         console.log(`\nLOG: (at '/game') player clicked hint, asking for hint`)
-        axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
+        const response = await axios.post(`${serverPort}/gameUpdate/hint/`+roomId, {
             params: {
-              sender: localIp,
+                sender: localIp,
             },
             headers: {
-              'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             }
         });
+        res.redirect("/game?hint=" + response.data);
     }
-    res.redirect("/game")
 })
 
 app.get("/createRoom", (req, res) => {

@@ -20,7 +20,7 @@ class Room {
         };
         
         this.restartRoom = () => {
-            if (this.livePlayers.length != 1) { return false; }
+            if (this.livePlayers.length != 1) { return false; } // can't restart as there are multiple winners
             this.livePlayers = [];
             
             for (let player of this.allPlayers) {
@@ -35,6 +35,14 @@ class Room {
                 // select random player to start game with
                 this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
             }
+            this.usedPlaces = {
+                "a":[],"b":[],"c":[],"d":[],"e":[],"f":[],
+                "g":[],"h":[],"i":[],"j":[],"k":[],"l":[],
+                "m":[],"n":[],"o":[],"p":[],"q":[],"r":[],
+                "s":[],"t":[],"u":[],"v":[],"w":[],"x":[],
+                "y":[],"z":[]
+            };
+            this.currWord = "a";
             return this.status;
         };
 
@@ -103,7 +111,7 @@ class Room {
         };
         this.currPlayer = -1; // id of current player
         this.currWord = "a";
-        this.roomLog = "hi this is room logs";
+        this.roomLog = "";
 
         this.addPlayer(creator);
     }
