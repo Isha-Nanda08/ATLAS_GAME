@@ -7,6 +7,7 @@ import os from "os";
 
 const port = 3090;
 const app = express();
+const botSleepTime = 3500;
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,6 +45,33 @@ function refreshAll(playerList) {
       axios.post(`${player.ip}/refresh`)
     }
   })
+}
+
+function giveHint(player, hint) {
+  g(`\nLOG: alerting ${player.ip}`);
+  axios.post(`${player.ip}/hintAlert/${hint}`)
+}
+
+function botTurn(room, bot) {
+  console.log(bot.isBot)
+  const correctAns = bot.makeGuess();
+  if (correctAns) {
+    console.log(`\nLOG: Bot answered correctly`)
+    room.roomLog = "bot has made correct guess"
+    refreshAll(room.allPlayers);
+    setTimeout(() => {
+      room.getNextPlayer();
+      refreshAll(room.allPlayers);
+    }, botSleepTime)
+  } else {
+    console.log(`\nLOG: Bot answered incorrectly`)
+    room.roomLog = "bot has made incorrect guess"
+    refreshAll(room.allPlayers);
+    setTimeout(() => {
+      room.reduceCurrLive();
+      refreshAll(room.allPlayers);
+    }, botSleepTime)
+  }
 }
 
 async function startServer() {
@@ -91,6 +119,9 @@ async function startServer() {
       console.log(`    from ${req.body.userIp}, room id available: ${newRoomId}`)
       newRoomId++;
 
+      const botEnable = req.body.botEnable;
+      const botDifficulty = req.body.botDifficulty;
+
       let isMatch = false;
       for (let i = 0; i < rooms.length; i++) {
         if (rooms[i].name == roomName) {
@@ -103,7 +134,11 @@ async function startServer() {
         res.send({roomId: -1});
       } else {
         rooms.push(newRoom);
-        console.log("   room successfully created")
+        console.log("   room successfully created");
+        if (botEnable) {
+          const bot = new Bot(botDifficulty)
+          newRoom.addBot(bot);
+        }
         homePagePlayers = homePagePlayers.filter(item => item.ip !== req.body.userIp);
         console.log(`   refreshing ${homePagePlayers.length} home page players`)
         refreshAll(homePagePlayers);
@@ -200,6 +235,7 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       const ans = req.body.locationInp.toLowerCase();
       const player = selectedRoom.livePlayers[selectedRoom.currPlayer]
+
       if (req.body.sender == player.ip) { // correct user sent message
         let locationInvalid = true; 
         const response = await axios.post(`http://localhost:3080/location/${ans}`,);
@@ -235,8 +271,13 @@ async function startServer() {
             selectedRoom.roomLog = `${player.name}'s input: ${ans}`
           }
         }
+        // res.send("ok")
         // TODO: timeup!!
         refreshAll(selectedRoom.allPlayers);
+
+        if (selectedRoom.livePlayers[selectedRoom.currPlayer].isBot) {
+          setTimeout(() => botTurn(selectedRoom, selectedRoom.livePlayers[selectedRoom.currPlayer]), botSleepTime)
+        }
       }
     })
 
@@ -266,3 +307,4 @@ startServer();
 
 // todo destroy room when creator exits winner room
 // TODO: update homepage if a room is deleted due to lack of players
+// TODO: timeup!!

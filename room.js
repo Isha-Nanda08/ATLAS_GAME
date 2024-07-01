@@ -12,6 +12,9 @@ class Room {
                 }
                 // select random player to start game with
                 this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
+                if (this.allPlayers[this.currPlayer].isBot) {
+                    this.getNextPlayer()
+                }
             }
             return this.status;
         };
@@ -46,14 +49,16 @@ class Room {
             }
         }
 
-        // this.addBot = () => {};
         this.getNextPlayer = () => {
             this.currPlayer = (this.currPlayer + 1) % this.livePlayers.length;
-            // if (this.currPlayer) curr player is bot
         };
         this.addPlayer = (newPlayer) => {
             this.allPlayers.push(newPlayer);
             newPlayer.roomID = this.id;
+        }
+        this.addBot = (bot) => {
+            this.allPlayers.push(bot);
+            bot.roomID = this.id;
         }
 
         this.updateGame = (location) => {
@@ -98,7 +103,7 @@ class Room {
         };
         this.currPlayer = -1; // id of current player
         this.currWord = "a";
-        this.roomLog = "";
+        this.roomLog = "hi this is room logs";
 
         this.addPlayer(creator);
     }
