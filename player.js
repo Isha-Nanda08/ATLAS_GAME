@@ -1,5 +1,4 @@
-const lives = 2, hints = 2;
-
+import { lives, hints } from "./settings";
 class Player {
     constructor(name, ip) {
         this.name = name;

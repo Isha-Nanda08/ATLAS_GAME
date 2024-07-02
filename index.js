@@ -5,6 +5,7 @@ import http from 'http';
 import os from "os";
 import readline from 'readline';
 import { Server } from 'socket.io';
+import { playerTimeInMinutes } from "./settings";
 
 const port = 3000;
 const app = express();
@@ -18,6 +19,8 @@ const rl = readline.createInterface({ //interface to read from the terminal
 let serverPort = 'http://localhost:3090'; //NOTE: if server port is changed make changes here
 let localIp = `http://localhost:${port}`;
 let roomId = undefined;
+let playerTime = playerTimeInMinutes*60; // convert it to sec
+let intervalRunning = false;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -161,7 +164,18 @@ app.get("/game", async (req, res) => {
                 res.redirect("/winnerPage");
             } else {
                 console.log(`       game running, updating user view`)
-                res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp)});
+                res.render("game-page.ejs", {...data, hasTurn: (turnIp == localIp), remainingTime: playerTime});
+                if (turnIp == localIp && !intervalRunning) {
+                    intervalRunning = true;
+                    const intervalId = setInterval(()=> {
+                        playerTimeInMinutes--;
+                        if (playerTimeInMinutes == 0) {
+                            // PLAYER FAILED TO ANSWER
+                            clearInterval(intervalId);
+                            intervalRunning = false;
+                        }
+                    }, 1000)
+                }
             }
         } else {
             console.log('       game not started, redirecting user')
@@ -176,6 +190,7 @@ app.post("/game", async (req, res) => {
         if (inp == null || inp == undefined || inp == '') { // empty input by user
             res.redirect('/game')
         } else {
+            playerTime = playerTimeInMinutes*60;
             console.log(`\nLOG: (at '/game') player clicked submit button, sending ${inp} as input`)
             await axios.post(`${serverPort}/gameUpdate/`+roomId, {
                 sender: localIp,

@@ -4,10 +4,10 @@ import axios from "axios";
 import { Player, Bot } from "./player.js";
 import Room from "./room.js";
 import os from "os";
+import { botSleepTime } from "./settings.js";
 
 const port = 3090;
 const app = express();
-const botSleepTime = 3500;
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -56,11 +56,12 @@ async function giveHint(usedPlaces, hint) {
   return null;
 }
 
-function botTurn(room, bot) {
+async function botTurn(room, bot) {
   console.log(bot.isBot)
   const correctAns = bot.makeGuess();
   if (correctAns) {
     console.log(`\nLOG: Bot answered correctly`)
+    const ans = await giveHint(room.usedPlaces[room.currWord[room.currWord.length - 1]], room.currWord[room.currWord.length - 1])
     room.roomLog = "bot has made correct guess"
     refreshAll(room.allPlayers);
     setTimeout(() => {
@@ -275,13 +276,11 @@ async function startServer() {
             selectedRoom.roomLog = `${player.name}'s input: ${ans}`
           }
         }
-        // res.send("ok")
-        // TODO: timeup!!
-        refreshAll(selectedRoom.allPlayers);
         res.send("ok");
+        refreshAll(selectedRoom.allPlayers);
 
         if (selectedRoom.livePlayers[selectedRoom.currPlayer].isBot) {
-          setTimeout(() => botTurn(selectedRoom, selectedRoom.livePlayers[selectedRoom.currPlayer]), botSleepTime)
+          setTimeout(async () => await botTurn(selectedRoom, selectedRoom.livePlayers[selectedRoom.currPlayer]), botSleepTime)
         }
       }
     })
@@ -291,9 +290,8 @@ async function startServer() {
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
-      //TODO: provide hint.
       const ans = await giveHint(selectedRoom.usedPlaces[selectedRoom.currWord[selectedRoom.currWord.length - 1]], selectedRoom.currWord[selectedRoom.currWord.length - 1])
-      if (ans == null) {
+      if (ans == null) { // TODO - no hint
         res.send("no-hint");
       }
       res.send(ans);
@@ -314,3 +312,4 @@ startServer();
 // todo destroy room when creator exits winner room
 // TODO: update homepage if a room is deleted due to lack of players
 // TODO: timeup!!
+// TODO - no hint

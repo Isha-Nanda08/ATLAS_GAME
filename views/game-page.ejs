@@ -42,7 +42,9 @@
             <p><span class="prev-player">next-player: <%= livePlayers[(currPlayer+1)%livePlayers.length].name %></span> <span class="prev-word">
                 word spoken: <span><%= currWord %></span></span></p>
             <p><span class="current-player">current-player: <%= livePlayers[currPlayer].name %> </span> <span class="current-alpha">current alphabet :</p>
-                <div id="timer-box">time left: <span class="time">10:00</span></div>
+                <div id="timer-box">time left: <span class="time">
+                    
+                </span></div>
             <p class="alpha"><%= currWord[currWord.length - 1] %></p>
             <% if (hasTurn) { %>
                 <form class="box-in" action="/game" method="post">
@@ -88,10 +90,13 @@
     const urlObj = new URL(url);
     const hint = urlObj.searchParams.get('hint');
 
-    if (hint) {
-        window.onload = () => {
+    window.onload = () => {
+        if (hint) {
             alert(hint)
         }
     }
+
+    const timeDiv = document.querySelector(".time")
+
 </script>
 </html>
