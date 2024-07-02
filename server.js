@@ -4,6 +4,7 @@ import axios from "axios";
 import { Player, Bot } from "./player.js";
 import Room from "./room.js";
 import os from "os";
+import { botSleepTime } from "./settings.js";
 
 const port = 3090;
 const app = express();
@@ -44,6 +45,38 @@ function refreshAll(playerList) {
       axios.post(`${player.ip}/refresh`)
     }
   })
+}
+
+async function giveHint(usedPlaces, hint) {
+  // console.log(`\nLOG: alerting ${player.ip}`);
+  const response = await axios.get(`http://localhost:3080/starts-with/${hint}`);
+  let list = response.data;
+  list = list.filter(item => !usedPlaces.includes(item.toLowerCase()));
+  if (list.length > 0) { return list[0]; }
+  return null;
+}
+
+async function botTurn(room, bot) {
+  console.log(bot.isBot)
+  const correctAns = bot.makeGuess();
+  if (correctAns) {
+    console.log(`\nLOG: Bot answered correctly`)
+    const ans = await giveHint(room.usedPlaces[room.currWord[room.currWord.length - 1]], room.currWord[room.currWord.length - 1])
+    room.roomLog = "bot has made correct guess"
+    refreshAll(room.allPlayers);
+    setTimeout(() => {
+      room.getNextPlayer();
+      refreshAll(room.allPlayers);
+    }, botSleepTime)
+  } else {
+    console.log(`\nLOG: Bot answered incorrectly`)
+    room.roomLog = "bot has made incorrect guess"
+    refreshAll(room.allPlayers);
+    setTimeout(() => {
+      room.reduceCurrLive();
+      refreshAll(room.allPlayers);
+    }, botSleepTime)
+  }
 }
 
 async function startServer() {
@@ -91,6 +124,9 @@ async function startServer() {
       console.log(`    from ${req.body.userIp}, room id available: ${newRoomId}`)
       newRoomId++;
 
+      const botEnable = req.body.botEnable;
+      const botDifficulty = req.body.botDifficulty;
+
       let isMatch = false;
       for (let i = 0; i < rooms.length; i++) {
         if (rooms[i].name == roomName) {
@@ -103,7 +139,11 @@ async function startServer() {
         res.send({roomId: -1});
       } else {
         rooms.push(newRoom);
-        console.log("   room successfully created")
+        console.log("   room successfully created");
+        if (botEnable) {
+          const bot = new Bot(botDifficulty)
+          newRoom.addBot(bot);
+        }
         homePagePlayers = homePagePlayers.filter(item => item.ip !== req.body.userIp);
         console.log(`   refreshing ${homePagePlayers.length} home page players`)
         refreshAll(homePagePlayers);
@@ -200,6 +240,7 @@ async function startServer() {
       const selectedRoom = rooms.find(item => item.id == roomId);
       const ans = req.body.locationInp.toLowerCase();
       const player = selectedRoom.livePlayers[selectedRoom.currPlayer]
+
       if (req.body.sender == player.ip) { // correct user sent message
         let locationInvalid = true; 
         const response = await axios.post(`http://localhost:3080/location/${ans}`,);
@@ -235,8 +276,12 @@ async function startServer() {
             selectedRoom.roomLog = `${player.name}'s input: ${ans}`
           }
         }
-        // TODO: timeup!!
+        res.send("ok");
         refreshAll(selectedRoom.allPlayers);
+
+        if (selectedRoom.livePlayers[selectedRoom.currPlayer].isBot) {
+          setTimeout(async () => await botTurn(selectedRoom, selectedRoom.livePlayers[selectedRoom.currPlayer]), botSleepTime)
+        }
       }
     })
 
@@ -245,11 +290,11 @@ async function startServer() {
       const roomId  = parseInt(req.params.id);
       const selectedRoom = rooms.find(item => item.id == roomId);
       selectedRoom.livePlayers[selectedRoom.currPlayer].hints--;
-      //TODO: provide hint.
-      selectedRoom.roomLog = "player used hint"
-      console.log("   skipping current player's turn")
-      selectedRoom.getNextPlayer();
-      refreshAll(selectedRoom.allPlayers);
+      const ans = await giveHint(selectedRoom.usedPlaces[selectedRoom.currWord[selectedRoom.currWord.length - 1]], selectedRoom.currWord[selectedRoom.currWord.length - 1])
+      if (ans == null) { // TODO - no hint
+        res.send("no-hint");
+      }
+      res.send(ans);
     })
 
     app.listen(port, () => {
@@ -266,3 +311,5 @@ startServer();
 
 // todo destroy room when creator exits winner room
 // TODO: update homepage if a room is deleted due to lack of players
+// TODO: timeup!!
+// TODO - no hint

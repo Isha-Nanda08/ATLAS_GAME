@@ -12,12 +12,15 @@ class Room {
                 }
                 // select random player to start game with
                 this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
+                if (this.allPlayers[this.currPlayer].isBot) {
+                    this.getNextPlayer()
+                }
             }
             return this.status;
         };
         
         this.restartRoom = () => {
-            if (this.livePlayers.length != 1) { return false; }
+            if (this.livePlayers.length != 1) { return false; } // can't restart as there are multiple winners
             this.livePlayers = [];
             
             for (let player of this.allPlayers) {
@@ -32,6 +35,14 @@ class Room {
                 // select random player to start game with
                 this.currPlayer = Math.floor(Math.random() * this.allPlayers.length);
             }
+            this.usedPlaces = {
+                "a":[],"b":[],"c":[],"d":[],"e":[],"f":[],
+                "g":[],"h":[],"i":[],"j":[],"k":[],"l":[],
+                "m":[],"n":[],"o":[],"p":[],"q":[],"r":[],
+                "s":[],"t":[],"u":[],"v":[],"w":[],"x":[],
+                "y":[],"z":[]
+            };
+            this.currWord = "a";
             return this.status;
         };
 
@@ -46,14 +57,16 @@ class Room {
             }
         }
 
-        // this.addBot = () => {};
         this.getNextPlayer = () => {
             this.currPlayer = (this.currPlayer + 1) % this.livePlayers.length;
-            // if (this.currPlayer) curr player is bot
         };
         this.addPlayer = (newPlayer) => {
             this.allPlayers.push(newPlayer);
             newPlayer.roomID = this.id;
+        }
+        this.addBot = (bot) => {
+            this.allPlayers.push(bot);
+            bot.roomID = this.id;
         }
 
         this.updateGame = (location) => {

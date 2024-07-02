@@ -42,7 +42,9 @@
             <p><span class="prev-player">next-player: <%= livePlayers[(currPlayer+1)%livePlayers.length].name %></span> <span class="prev-word">
                 word spoken: <span><%= currWord %></span></span></p>
             <p><span class="current-player">current-player: <%= livePlayers[currPlayer].name %> </span> <span class="current-alpha">current alphabet :</p>
-                <div id="timer-box">time left: <span class="time">10:00</span></div>
+                <div id="timer-box">time left: <span class="time">
+                    
+                </span></div>
             <p class="alpha"><%= currWord[currWord.length - 1] %></p>
             <% if (hasTurn) { %>
                 <form class="box-in" action="/game" method="post">
@@ -71,7 +73,9 @@
         <div class="map-svg">
             <%- include("svgs/world 1.ejs") %>
         </div>
-        <div class="current-loc"></div>
+        <div class="current-loc">
+            <%=  roomLog %>
+        </div>
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
@@ -81,5 +85,18 @@
         console.log("update request recieved from client")
         location.reload()
     });
+
+    const url = window.location.href;
+    const urlObj = new URL(url);
+    const hint = urlObj.searchParams.get('hint');
+
+    window.onload = () => {
+        if (hint) {
+            alert(hint)
+        }
+    }
+
+    const timeDiv = document.querySelector(".time")
+
 </script>
 </html>
