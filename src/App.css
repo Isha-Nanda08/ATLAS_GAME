@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+}
+
+html {
+    font-size: 16px;
+}
+:root {
+    --bg-1: rgb(0 8 0 / 65%);
+    --base-green: #adff2f;
+    --dark-green: #233309;
+    --white: white;
+}
+.center-container {
+    border-radius: 1rem;
+    border: 2px solid var(--base-green);
+    background-color: var(--bg-1);
+    color: var(--base-green);
+    padding: 3rem;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+.hide { display: none; }
+h2.title {  
+    font-size: 2.2rem;  
+    letter-spacing: .1rem;
+}
+
+.input-box { position: relative; }
+.input-box input {
+    width: 100%;
+    font-size: 1rem;
+    padding: .5rem 1.2rem;
+    outline: none;
+    border: 2px solid var(--white);
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    caret-color: var(--base-green);
+    color: white;
+    transition: all .5s ease;
+}
+.input-box strong {
+    position: absolute;
+    left: 0%; top: 50%;
+    pointer-events: none;
+    padding: 0rem 1.2rem;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--white);
+    transition: all .2s ease-out;
+    border-radius: 1000px;
+}
+
+.input-box input:focus ~ strong,
+.input-box input:valid ~ strong {
+    top: 0;
+    transform: translateY(-50%) scale(0.75);
+    background-color: var(--white);
+    color: var(--dark-green);
+}
+.check-box {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    color: var(--white);
+}
+
+.btn {
+    border: none;
+    padding: .5rem 1.2rem;
+    color: var(--dark-green);
+    font-weight: bold;
+    /* background: var(--white); */
+    background-color: var(--base-green);
+    border-radius: 10px;
+    letter-spacing: .1rem;
+    font-size: 1.2rem;
+    box-shadow: 
+        inset 5px 5px 13px -5px white, 
+        inset -5px -5px 13px -5px black;
+}
+
+.button-container {
+    display: flex;
+    gap: 2rem;
+}
