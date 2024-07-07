@@ -1,4 +1,4 @@
-import { lives, hints } from "./settings";
+import { lives, hints } from "./settings.js";
 class Player {
     constructor(name, ip) {
         this.name = name;

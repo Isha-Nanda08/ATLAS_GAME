@@ -5,9 +5,9 @@ import http from 'http';
 import os from "os";
 import readline from 'readline';
 import { Server } from 'socket.io';
-import { playerTimeInMinutes } from "./settings";
+import { playerTimeInMinutes } from "./settings.js";
 
-const port = 3000;
+const port = 3001;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
