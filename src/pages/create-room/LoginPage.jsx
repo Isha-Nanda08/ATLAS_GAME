@@ -1,4 +1,9 @@
+import { useState } from "react";
+import './create-room.css'
+
 export default function LoginPage(props) {
+    const roomList = ['room A', 'room b', 'room c', 'room d', 'r2d2'];
+    const [room, setRoom] = useState('');
     return <>
     <section id="create-room-section">
     <>
@@ -47,8 +52,15 @@ export default function LoginPage(props) {
                 <input type="text" name="username" required /> <strong>User Name</strong>
             </div>
 
-            <div className="select-box">
-                <input type="text" name="username" required /> <strong>Room Name</strong>
+            <div className="select-box input-box">
+                <input type="text" name="username" required value={room} /> <strong>Room Name</strong>
+                <ul className="drop-down">
+                    {
+                        roomList.map((room, index) => {
+                            return <li onClick={() => setRoom(room)}>{room}</li>
+                        })
+                    }
+                </ul>
             </div>
             
             <div className="input-box">
@@ -58,9 +70,9 @@ export default function LoginPage(props) {
 
 
             <div className="button-container">
-                <button className="btn">Create Room</button>
                 <button className="btn" type="submit">Join Room</button>
             </div>
+            <button className="btn-link">Create Room</button>
         </form>
     </div>
 </section>

@@ -5,6 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Quicksand', sans-serif;
+    user-select: none;
 }
 
 html {
@@ -25,6 +26,12 @@ html {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+
+    z-index: 3;
+    display: flex;
+    justify-content: center; align-items: center;
+    flex-direction: column;
+    gap: 2rem;
 }
 .hide { display: none; }
 h2.title {  
@@ -70,9 +77,11 @@ h2.title {
     gap: .5rem;
     color: var(--white);
 }
-
+button {cursor: pointer;}
 .btn {
     border: none;
+    width: 100%;
+    min-width: max-content;
     padding: .5rem 1.2rem;
     color: var(--dark-green);
     font-weight: bold;
@@ -80,7 +89,7 @@ h2.title {
     background-color: var(--base-green);
     border-radius: 10px;
     letter-spacing: .1rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     box-shadow: 
         inset 5px 5px 13px -5px white, 
         inset -5px -5px 13px -5px black;
@@ -88,5 +97,87 @@ h2.title {
 
 .button-container {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
+}
+
+.btn-link {
+    background: none;
+    outline: none; border: none;
+    font-size: 1rem;
+    color: var(--base-green);
+}
+ul { list-style: none; }
+
+.drop-down {
+    z-index: 10;
+    position: absolute;
+    background-color: var(--dark-green);
+    width: 100%;
+    flex-direction: column;
+    gap: .5rem;
+    padding: .5rem;
+    display: none;
+    max-height: 10.5rem;
+    overflow-y: scroll;
+    transition: all .5s ease;
+}
+.drop-down::-webkit-scrollbar { display: none; }
+.drop-down li {
+    border: 2px solid white;
+    text-align: center;
+    font-size: 1rem;
+    padding: .2rem;
+    border-radius: 8px;
+    position: relative;
+}
+.drop-down li::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    width: 0%; height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: all .3s ease-out;
+}
+.drop-down li:hover::after {
+    left: 0;
+    width: 100%;
+}
+.select-box:hover .drop-down {
+    display: flex;
+}
+.horizontal-wrapper {
+    display: flex; gap: 2rem;
+    width: 100%;
+    justify-content: space-between;
+    align-items: start;
+}
+.player-list {
+    flex: 1;
+    color: white;
+}
+.player-creator {
+    font-size: .8rem;
+    margin: .2rem;
+    color: var(--base-green);
+}
+.player-creator p { 
+    font-size: 1.2rem;
+    font-weight: bold; 
+    color: white;
+    display: inline;
+}
+.player-winner {
+    font-size: 1.4rem;
+    margin: .2rem;
+    color: var(--base-green);
+}
+.player-winner p { 
+    font-size: 1.8rem;
+    font-weight: bold; 
+    color: white;
+    display: inline;
+}
+.error {
+    color: orangered;
+    font-weight: bold;
 }

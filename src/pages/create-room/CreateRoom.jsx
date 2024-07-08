@@ -69,9 +69,9 @@ export default function CreateRoom(props) {
                     </div>
 
                     <div className="button-container">
-                        <button className="btn">Join Room</button>
                         <button className="btn" type="submit">Create Room</button>
                     </div>
+                    <button className="btn-link" type='button'>Join Room</button>
                 </form>
             </div>
         </section>

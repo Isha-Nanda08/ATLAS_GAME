@@ -1,0 +1,120 @@
+section#lobby-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    background-image: url('../../../public/bgrd2.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-blend-mode: lighten;
+    background-size: cover;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+section#lobby-section span {
+    position: relative;
+    display: block;
+    width: calc(100vw/18 - 2px);
+    height: calc(100vw/18 - 2px);
+    background: hsla(0, 0%, 3%, 0.4);
+    z-index: 2;
+    transition: 1.5s;
+}
+
+section#lobby-section span:hover {
+    background: transparent;
+    transition: 0s;
+    opacity: 0;
+}
+
+.globe {
+    height: 200px;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 20px white;
+    border-radius: 50%;
+}
+
+.circle {
+    height: 90%;
+    aspect-ratio: 1;
+    border: 3px solid rgba(255, 255, 255, 0);
+    border-radius: 50%;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    position: relative;
+    animation: anim 10s infinite;
+}
+
+@keyframes anim {
+    from {
+        transform: rotateY(-360deg) rotateZ(-360deg);
+    }
+}
+
+.circle>div {
+    height: 100%;
+    aspect-ratio: 1;
+    position: absolute;
+    border: 3px solid white;
+    border-radius: 50%;
+    animation: anim 10s infinite;
+}
+
+
+.circle>div:nth-child(1) {
+    transform: rotateY(36deg);
+    border: 3px solid white;
+}
+
+.circle>div:nth-child(2) {
+    transform: rotateY(72deg);
+    border: 3px solid yellow;
+}
+
+.circle>div:nth-child(3) {
+    transform: rotateY(108deg);
+    border: 3px solid white;
+}
+
+.circle>div:nth-child(4) {
+    transform: rotateY(144deg);
+    border: 3px solid yellow;
+}
+
+.gif-container {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%; width: 100%;
+}
+.gif-container img {
+    position: absolute;
+    bottom: 0;
+    transform: translate(-50%, 20%) scale(.8);
+}
+.gif-container .bunny-dance {
+    right: 0;
+    transform: translate(50%, 20%) scale(.8);
+}
+.gif-container .celeb {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+.trophy img {
+    height: 100%;
+}
+.trophy {
+    height: 200px;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
