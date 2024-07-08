@@ -1,52 +1,81 @@
-// <!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//     <link rel="stylesheet" href="style/winner.css">
-//     <title>Game-room</title>
-// </head>
-// <body>
-//     <section>
-//         <div class="content">
-//         <img src="/celeb.gif" class="celeb" alt="">
-//         <img src="/output-onlinegiftools.gif"  class="bunny-dance" alt="">
-//         <img src="/djsaur.gif"  class="djsaur-dance" alt="">
-//         <div class="selected-room">
-//             <p><span><%= name %></span></p>
-//         </div>
-        
-//         <div class="players">
-//             <div class="player-info">
-//             <p class="winner-name">Winner: <span>🎖️<%= winner %></span></p>
-//             <div class="player-list">
-//                 <% for (let i=0; i<players.length; i++) { %>
-//                     <ul>🎖️<%= players[i].name %></ul>
-//                 <% } %>
-//             </div>
-//         <p class="created">created by: <span>🎖️<%= creator %></span></p>
-//         </div>
-//             <div class="trophy">
-//                <img src="/trophy-joypixels.gif" class="tophy" alt="">
-//             </div>
-//         </div>
-//         <div class="error-text">
-//            ERROR!
-//         </div>
-//         <form class="buttons" action="/lobby" method="post">
-//             <% if (isCreator) { %>
-//                 <button class="start-game" name="action" type="submit" value="restart">play again</button>
-//             <% } %>
-//             <button class="leave-room" name="action" type="submit" value="leave">leave room</button>
-//         </div>
-//     </div>
-// </section>
-// </body>
-// <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-// <script>
-//     const socket = io();
-//     socket.on('update', (data) => {
-//       location.reload()
-//     });
-//   </script>
-// </html>
+import './lobby.css'
+export default function WinnerPage() {
+    const roomName = "tarush room";
+    const playerList = ['player 1', 'player 2', 'player 3', 'a very very long long long name'];
+    const creator = 'player 1';
+    const winner = 'player 2';
+    const errTxt = "this is error text"
+
+    return <>
+    <section id="lobby-section">
+    <>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+        <span></span> <span></span> <span></span> <span></span> <span></span>
+    </>
+        <div className="center-container">
+            <div className="gif-container">
+                <img src="/celeb.gif" className="celeb" alt=""/>
+                <img src="/output-onlinegiftools.gif"  className="bunny-dance" alt=""/>
+                <img src="/djsaur.gif" className="djsaur-dance" alt=""/>
+            </div>
+            <h2 className="title">{roomName}</h2>
+            <div className="player-winner">Winner: <p>{winner}</p></div>
+            <div className="horizontal-wrapper">
+                <ul className="player-list">
+                    <li className="player-creator">Owner: <p>{creator}</p></li>
+                    { playerList.map((player, index) => {
+                        if (player != creator || player != winner) {
+                            return <li key={index}>🎖️{player}</li>
+                        }
+                    }) }
+                </ul>
+                <div className="trophy">
+                    <img src="/trophy.gif" alt="" />
+                </div>
+            </div>
+
+            <div className="button-container">
+                <button className="btn">Play Again</button>
+                <button className="btn">Leave Room</button>
+            </div>
+            <p className="error">
+                {errTxt}
+            </p>
+        </div>
+    </section>
+    </>
+}

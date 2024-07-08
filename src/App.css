@@ -146,7 +146,7 @@ ul { list-style: none; }
     display: flex;
 }
 .horizontal-wrapper {
-    display: flex;
+    display: flex; gap: 2rem;
     width: 100%;
     justify-content: space-between;
     align-items: start;
@@ -160,8 +160,24 @@ ul { list-style: none; }
     margin: .2rem;
     color: var(--base-green);
 }
-.player-creator span { 
+.player-creator p { 
     font-size: 1.2rem;
     font-weight: bold; 
     color: white;
+    display: inline;
+}
+.player-winner {
+    font-size: 1.4rem;
+    margin: .2rem;
+    color: var(--base-green);
+}
+.player-winner p { 
+    font-size: 1.8rem;
+    font-weight: bold; 
+    color: white;
+    display: inline;
+}
+.error {
+    color: orangered;
+    font-weight: bold;
 }
