@@ -1,0 +1,71 @@
+section#game {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+}
+#room-name {
+    color: var(--base-green);
+    display: flex;
+    align-items: center; justify-content: center;
+    background-color: var(--dark-green);
+    padding: .6rem 0rem;
+}
+#game-player-list {
+    width: 100vw;
+    overflow-x: scroll;
+    display: flex;
+    gap: .7rem;
+    padding: .7rem .5rem;
+    background-color: var(--dark-green);
+}
+#game-player-list li {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--player);
+    border: 2px solid var(--player);
+    padding: .4rem .8rem;
+    border-radius: .8rem;
+    flex: 1;
+    min-width: max-content;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 
+        0px 3px 5px 2px black,
+        inset 0px 0px 8px 4px var(--player);
+}
+#game-player-list li.dead {
+    box-shadow: 
+        0px 3px 5px 2px black,
+        inset 0px 0px 8px 4px var(--dead-player);
+    color: var(--dead-player);
+    border: 2px solid var(--dead-player);
+    background-color: rgba(102, 0, 0, 0.212);
+
+}
+#game-player-list li.current {
+    box-shadow: 
+        0px 3px 5px 2px black,
+        inset 0px 0px 8px 4px var(--base-green);
+    color: var(--base-green);
+    border: 2px solid var(--base-green);
+    background-color: rgba(81, 167, 6, 0.218);
+}
+
+#game-player-list li .name {
+    font-weight: bold;
+}
+.game-container {
+    display: flex;
+    height: 100%;
+}
+
+.game-container .left {
+    background-color: red;
+    flex: 1;
+}
+.game-container .right {
+    background-color: blue;
+    flex: 1;
+}
+.game-container .middle {
+    background-color: white;
+    flex: 2;
+}
