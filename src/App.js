@@ -7,43 +7,79 @@ import GameLobby from './pages/lobby-pages/GameLobby';
 import WinnerPage from './pages/lobby-pages/WinnerPage';
 import GamePage from './pages/game-page/GamePage';
 
-const SOCKET_SERVER_URL = 'http://localhost:4000'; // Replace with your server URL
+const SOCKET_SERVER_URL = 'http://localhost:3090'; // Replace with your server URL
 
-function renderCurrPage(currPage, props) {
-  switch (currPage) {
-    case 'create-room':
-      return <CreateRoom {...props} />
-    case 'login-page':
-      return <LoginPage {...props} />
-    case 'game-lobby':
-      return <GameLobby {...props} />
-    case 'winner-page':
-      return <WinnerPage {...props} />
-    case 'game-page':
-      return <GamePage {...props} />
-    default:
-      return null;
-  }
-}
 
 function App() {
-  const [currPage, setCurrPage] = useState('login-page');
-  const [socket, setSocket] = useState(null);
+    let [userId, setUserId] = useState(localStorage.getItem('socketId'));
+    const [currPage, setCurrPage] = useState('login-page');
+    const [socket, setSocket] = useState(null);
+    const [extra, setExtra] = useState({});
+    const [roomId, setRoomId] = useState(-1);
 
-  useEffect(() => {
-    // Establish socket connection when the component mounts
-    const newSocket = io(SOCKET_SERVER_URL);
-    setSocket(newSocket);
+    useEffect(() => {
+        const newSocket = io(SOCKET_SERVER_URL, {
+            transports: ['websocket'],
+        });
 
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    };
-  }, []);
+        setSocket(newSocket);
 
-  return renderCurrPage(currPage);
+        newSocket.on('connect', () => {
+            console.log('Connected to the server:', newSocket.id);
+            if (userId == null) {
+                localStorage.setItem('socketId', newSocket.id)
+                setUserId(newSocket.id)
+            }
+            console.log("user id found: ", userId)
+            console.log("Sending update request")
+            newSocket.emit('update-me', { userId });
+        });
+
+        newSocket.on('your-initial-data', (data) => {
+            console.log('initial-data given by server', data);
+            setRoomId(data.roomId)
+        })
+
+        newSocket.on('your-room-id', (data) => {
+            console.log('joined/created room id given by server', data);
+            if (data.roomId == -1) {
+                setExtra({ error: data.error })
+            } else {
+                setRoomId(data.roomId);
+                setCurrPage('game-lobby');
+            }
+        })
+
+        newSocket.on('your-room-started', () => {
+            setCurrPage('game-page');
+        })
+
+        return () => {
+            if (newSocket) {
+                newSocket.disconnect();
+            }
+        };
+    }, [userId]);
+
+
+    const renderCurrPage = (currPage, props) => {
+        switch (currPage) {
+            case 'create-room':
+                return <CreateRoom {...props} />
+            case 'login-page':
+                return <LoginPage {...props} />
+            case 'game-lobby':
+                return <GameLobby {...props} setRoomId={setRoomId} />
+            case 'winner-page':
+                return <WinnerPage {...props} />
+            case 'game-page':
+                return <GamePage {...props} />
+            default:
+                return null;
+        }
+    }
+
+    return renderCurrPage(currPage, { socket, setCurrPage, roomId, extra, userId });
 }
 
 export default App;

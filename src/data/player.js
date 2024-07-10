@@ -5,7 +5,7 @@ class Player {
         this.lives = lives;
         this.roomID = -1;
         this.hints = hints;
-        this.ip = ip;
+        this.socketId = ip;
         
         this.reset = () => {
             this.lives = lives;

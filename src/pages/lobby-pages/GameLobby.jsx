@@ -1,10 +1,45 @@
+import { useEffect, useState } from 'react';
 import './lobby.css';
 
-export default function GameLobby() {
-    const roomName = "tarush room";
-    const playerList = ['player 1', 'player 2', 'player 3', 'a very very long long long name'];
-    const creator = 'player 1';
-    const errTxt = "this is error text"
+export default function GameLobby({ socket, setCurrPage, roomId, userId, setRoomId }) {
+    const [{roomName, allPlayers, creator, creatorId, roomStatus}, setRoomInfo] = useState({
+        roomName: '',
+        allPlayers: [],
+        creator: '',
+        creatorId: '',
+        roomStatus: false
+    })
+    const [error, setError] = useState('')
+    if (roomStatus) {
+        setCurrPage('game-page')
+    } else if (roomId == -1) {
+        setCurrPage('login-page')
+    }
+
+    const startRoom = () => {
+        socket.emit('start-room', { userId })
+    }
+    const leaveRoom = () => {
+        socket.emit('leave-room', { userId })
+        setRoomId(-1)
+    }
+
+    useEffect(()=> {
+        if (socket) {
+            socket.emit('room-lobby-data', { userId })
+            socket.on('room-lobby-data', (data)=> {
+                console.log("received lobby data from server: ", data)
+                setRoomInfo(data)
+            })
+            socket.on('your-room-started', () => {
+                setCurrPage('game-page')
+            })
+
+            socket.on('unable-to-start-room', (data) => {
+                setError(data.error)
+            })
+        }
+    }, [socket])
     return <>
     <section id="lobby-section">
     <>
@@ -50,10 +85,8 @@ export default function GameLobby() {
             <div className="horizontal-wrapper">
                 <ul className="player-list">
                     <li className="player-creator">Owner: <p>{creator}</p></li>
-                    { playerList.map((player, index) => {
-                        if (player != creator) {
+                    { allPlayers.map((player, index) => {
                             return <li key={index}>🎖️{player}</li>
-                        }
                     }) }
                 </ul>
                 <div className="globe">
@@ -67,11 +100,11 @@ export default function GameLobby() {
             </div>
 
             <div className="button-container">
-                <button className="btn">Start Game</button>
-                <button className="btn">Leave Room</button>
+                { creatorId === userId && <button className="btn" onClick={() => startRoom()}>Start Game</button> }
+                <button className="btn" onClick={() => leaveRoom()}>Leave Room</button>
             </div>
             <p className="error">
-                {errTxt}
+                {error}
             </p>
         </div>
     </section>

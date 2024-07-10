@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './game-page.css'
 export default function GamePage(params) {
     // room name
@@ -13,14 +14,10 @@ export default function GamePage(params) {
         // hint btn
         // leave btn
     // game logs
-    const roomName = "taruh room"
-    const playerList = [
-        'a', 'b', 'c', 'd', 'e',
-        'a', 'b', 'c', 'd', 'e',
-        'a', 'b', 'c', 'd', 'e',
-        'a', 'b', 'c', 'd', 'e',
-        'a', 'b', 'c', 'd', 'e',
-    ]
+    const [gameData, setDameData] = useState({
+        roomName: '',
+        playerList: [],
+    })
     return <>
     <section id="game">
         <div id="room-name">
