@@ -16,6 +16,8 @@ html {
     --base-green: #adff2f;
     --dark-green: #233309;
     --white: white;
+    --dead-player: rgb(188, 0, 0);
+    --player: rgb(15, 163, 15);
 }
 .center-container {
     border-radius: 1rem;
@@ -26,6 +28,7 @@ html {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    min-width: 30rem;
 
     z-index: 3;
     display: flex;
@@ -35,10 +38,14 @@ html {
 }
 .hide { display: none; }
 h2.title {  
-    font-size: 2.2rem;  
+    font-size: 2.2rem;
     letter-spacing: .1rem;
 }
-
+h1.title {
+    font-size: 3rem;
+    letter-spacing: .25rem;
+    word-spacing: .6rem;
+}
 .input-box { position: relative; }
 .input-box input {
     width: 100%;
@@ -107,6 +114,7 @@ button {cursor: pointer;}
     color: var(--base-green);
 }
 ul { list-style: none; }
+ul::-webkit-scrollbar { display: none; }
 
 .drop-down {
     z-index: 10;
