@@ -62,10 +62,62 @@ section#game {
     flex: 1;
 }
 .game-container .right {
-    background-color: blue;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-evenly;
     flex: 1;
 }
+.game-container .right form {
+    position: relative;
+    display: flex; flex-direction: column;
+    gap: .7rem;
+    color: white;
+    background-color: var(--dark-green);
+    padding: 3rem;
+    border-radius: 2rem;
+    font-size: 1.2rem;
+    width: 90%;
+}
+.game-container .right form span span {
+    font-size: 1.6rem;
+    color: var(--base-green);
+}
 .game-container .middle {
-    background-color: white;
+    background-color: red;
     flex: 2;
+}
+.game-container .right > div {
+    display: flex; flex-direction: column;
+    gap: .2rem;
+    color: white;
+    background-color: var(--dark-green);
+    padding: 3rem;
+    border-radius: 2rem;
+    font-size: 1.2rem;
+    width: 90%;
+}
+.game-container .right > div .title {
+    transform: translateY(-1rem);
+    text-align: center;
+}
+.game-container .right ul {
+    max-height: 18rem;
+    overflow: scroll;
+    display: flex; flex-direction: column;
+    gap: .2rem;
+}
+.game-container .right ul li {
+    padding-bottom: .2rem;
+    border-bottom: 1px solid white;
+}
+form.locked::after {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    content: '';
+}
+h2.title {
+    color: var(--base-green);
+    text-align: center;
 }

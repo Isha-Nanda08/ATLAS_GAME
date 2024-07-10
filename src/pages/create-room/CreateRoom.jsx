@@ -11,7 +11,7 @@ export default function CreateRoom({socket, setCurrPage, roomId, extra, userId})
         const userName = document.getElementById("username").value
         const password = document.getElementById('password').value;
         const roomName = document.getElementById('roomname').value;
-        const botDifficulty = document.getElementById('botDifficulty').value;
+        const botDifficulty = parseInt(document.getElementById('botDifficulty').value) || 0;
         // const publicRoom = document.getElementById('publicRoom').checked;
         const enableBot = document.getElementById('enableBot').checked;
 
@@ -89,11 +89,14 @@ export default function CreateRoom({socket, setCurrPage, roomId, extra, userId})
                     
                     <div className="check-box">
                         {/* <i> <input type="checkbox" id="publicRoom" name="publicRoom" /> Do you want to make room public?</i> */}
-                        <i> <input type="checkbox" id="enableBot" name="enableBot" checked={needBot} onClick={(e) => { setNeedBot(!needBot) }} /> Do you want to include bot?</i>
+                        <i> 
+                            <input type="checkbox" id="enableBot" name="enableBot" checked={needBot} onClick={(e) => { setNeedBot(!needBot) }} /> 
+                            <label for="enableBot"> Do you want to include bot?</label>
+                        </i>
                     </div>
 
                     <div className={needBot? "input-box" : "hide input-box"}>
-                        <input type="text" id="botDifficulty" min="1" max="100" value="0" required /> <strong>Difficulty (in %)</strong>
+                        <input type="text" id="botDifficulty" min="1" max="100" required /> <strong>Difficulty (in %)</strong>
                     </div>
 
                     <div className="button-container">
