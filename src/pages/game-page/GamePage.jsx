@@ -52,7 +52,7 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
         <div id="room-name">
             <h1 className="title">{ roomName }</h1>
         </div>
-        <ul id="game-player-list">
+        {/* <ul id="game-player-list">
             { allPlayers.map((player) => {
                 let className = '';
                 if (player.id === currPlayerId) {
@@ -66,16 +66,33 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
                     <span className="hints">hints: {player.hints}</span>
                 </li>
             }) }
-        </ul>
+        </ul> */}
         <div className="game-container">
-            {/* <div className="left">
-                
-            </div> */}
+            <div className="left">
+                <div className='float-box'>
+                    <h2 className="title">Player List</h2>
+                    <ul id="game-player-list">
+                        { allPlayers.map((player) => {
+                            let className = '';
+                            if (player.id === currPlayerId) {
+                                className = 'current'
+                            } else if (!livePlayers.some(user => user.id === player.id)) {
+                                className = 'dead'
+                            }
+                            return <li key={player.id} className={className}>
+                                <span className="name">{player.name}</span>
+                                <span className="lives">lives: {player.lives} hints: {player.hints}</span>
+                            </li>
+                        }) }
+                    </ul>
+                </div>
+            </div>
             <div className="middle">
-                {/* This portion is for map!! */}
+                {/* <img src="./../../../public/map.svg" alt="" /> */}
+                <img src="map.svg" alt="" />
             </div>
             <div className="right">
-                <div>
+                <div className='float-box'>
                     <h2 className="title">Room History</h2>
                     <ul>
                     { roomLog.map(log => (
@@ -84,7 +101,7 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
                     </ul>
                 </div>
 
-                <form action="" className={userId === currPlayerId? "unlocked" : "locked"}>
+                <form action="" className="float-box">
                     {/* prev ans */}
                     {/* current letter */}
                     <span className="prevAns">previous ans: <span>Asia</span></span>
