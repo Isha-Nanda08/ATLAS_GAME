@@ -1,41 +1,49 @@
 import { useEffect, useState } from 'react'
 import './game-page.css'
-export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
-    // room name
-    // player list
-        // player name
-        // player is alive - color
-        // current player - color
-        // player lives
-        // player hints
-    // input section
-        // current ans
-        // timer
-        // hint btn
-        // leave btn
-    // game logs
-    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog }, setGameData] = useState({
+export default function GamePage({socket, setCurrPage, roomId, userId}) {
+    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog, prevAns }, setGameData] = useState({
         roomName : '',
         roomStatus : true,
         allPlayers : [],
         livePlayers : [],
         currPlayerId : '',
         roomLog : [],
-        // also ask: remaining time
+        prevAns : '',
+        // TODO:  also ask: remaining time
     })
 
     if (roomId === -1) {
         setCurrPage('login-page')
     } else if (!roomStatus) {
         setCurrPage('game-lobby')
+    } else if (livePlayers.length == 1) {
+        setCurrPage('winner-page')
     }
-    // if room status and live player == 1 => go to winner page
+
+    const sendAns = (event) => {
+        event.preventDefault()
+        const ans = document.getElementById("answer").value;
+        if (ans != '') {
+            socket.emit('my-game-input', { ans, userId })
+        }
+    }
+    const getHint = () => {
+        console.log('sending hint request to user')
+        socket.emit('get-game-hint', { userId })
+    }
     useEffect(() => {
         console.log('sending game data reuest to server')
+        
         socket.emit('get-running-game-info', { userId })
+
         socket.on('running-game-info', data => {
             console.log('recieved game info')
             setGameData(data)
+        })
+
+        socket.on('your-game-hint', data => {
+            console.log('hint received: ', data.ans)
+            alert(`your hint: ${data.ans}`);
         })
         // const timerDiv = document.querySelector('.timer')
         // const intervalId = setInterval(() => {
@@ -47,7 +55,6 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
         // }
     }, [socket])
     return <>
-    {/* {roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog} */}
     <section id="game">
         <div id="room-name">
             <h1 className="title">{ roomName }</h1>
@@ -88,7 +95,6 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
                 </div>
             </div>
             <div className="middle">
-                {/* <img src="./../../../public/map.svg" alt="" /> */}
                 <img src="map.svg" alt="" />
             </div>
             <div className="right">
@@ -102,10 +108,8 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
                 </div>
 
                 <form action="" className="float-box">
-                    {/* prev ans */}
-                    {/* current letter */}
-                    <span className="prevAns">previous ans: <span>Asia</span></span>
-                    <span className="currentWord">current letter: <span>a</span></span>
+                    <span className="prevAns">previous ans: <span>{prevAns}</span></span>
+                    <span className="currentWord">current letter: <span>{prevAns.charAt(prevAns.length - 1)}</span></span>
                     <span className="timer">time left: <span>15:00</span></span>
                     {
                         userId === currPlayerId? 
@@ -115,8 +119,8 @@ export default function GamePage({socket, setCurrPage, roomId, extra, userId}) {
                                 <strong>answer</strong>
                             </div>
                             <div className="button-container">
-                                <button className="btn">Hint</button>
-                                <button className="btn">Submit</button>
+                                <button className="btn" onClick={() => getHint()} type='button'>Hint</button>
+                                <button className="btn" type='submit' onClick={(event) => sendAns(event)}>Submit</button>
                             </div>
                         </>
                         : <>

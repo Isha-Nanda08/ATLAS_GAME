@@ -100,7 +100,7 @@ section#game {
     flex: 1;
 }
 .game-container .right ul {
-    max-height: 18rem;
+    max-height: 100%;
     overflow: scroll;
     display: flex; flex-direction: column;
     gap: .2rem;
@@ -135,6 +135,3 @@ section#game {
     color: white;
     border: 2px solid var(--base-green);
 }
-/* .left .float-box{
-    width: 100%;
-} */
