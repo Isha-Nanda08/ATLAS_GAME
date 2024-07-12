@@ -37,3 +37,13 @@ section#create-room-section .create-room-container  form {
     gap: 2rem;
     width: 100%;
 }
+.cc {
+    position: absolute;
+    bottom: calc(20px);
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 100;
+}

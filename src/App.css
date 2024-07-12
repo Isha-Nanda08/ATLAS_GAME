@@ -102,7 +102,10 @@ button {cursor: pointer;}
         inset 5px 5px 13px -5px white, 
         inset -5px -5px 13px -5px black;
 }
-
+.btn.disabled {
+    background-color: var(--dead-player);
+    cursor: not-allowed;
+}
 .button-container {
     display: flex;
     gap: 1rem;

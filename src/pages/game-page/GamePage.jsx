@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './game-page.css'
 export default function GamePage({socket, setCurrPage, roomId, userId}) {
-    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog, prevAns, remainingTime }, setGameData] = useState({
+    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog, prevAns, remainingTime, currPlayerHints }, setGameData] = useState({
         roomName : '',
         roomStatus : true,
         allPlayers : [],
@@ -9,7 +9,8 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
         currPlayerId : '',
         roomLog : [],
         prevAns : '',
-        remainingTime: 0
+        remainingTime: 0, 
+        currPlayerHints: 0
     })
 
     useEffect(() => {
@@ -143,7 +144,7 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
                                 <strong>answer</strong>
                             </div>
                             <div className="button-container">
-                                <button className="btn" onClick={() => getHint()} type='button'>Hint</button>
+                                <button className={currPlayerHints>0?"btn":"btn disabled"} onClick={() => getHint()} type='button'>Hint</button>
                                 <button className="btn" type='submit' onClick={(event) => sendAns(event)}>Submit</button>
                             </div>
                         </>

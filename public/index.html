@@ -10,7 +10,19 @@
     />
     <title>Atlas Game</title>
   </head>
-  <body>
+  <body onclick="playAudio()">
+    <!-- <audio id="background-audio" src="" loop></audio> -->
     <div id="root"></div>
+    <script>
+      let isPlaying = false
+      const audio = new Audio('Mushroom-Theme.mp3')
+      audio.loop = true;
+      function playAudio() {
+        if (!isPlaying) {
+          audio.play();
+          isPlaying = true
+        }
+      }
+    </script>
   </body>
 </html>

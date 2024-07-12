@@ -7,7 +7,7 @@ import GameLobby from './pages/lobby-pages/GameLobby';
 import WinnerPage from './pages/lobby-pages/WinnerPage';
 import GamePage from './pages/game-page/GamePage';
 
-const SOCKET_SERVER_URL = 'http://localhost:3090'; // Replace with your server URL
+const SOCKET_SERVER_URL = 'https://atlas-server-ecru.vercel.app'; // Replace with your server URL
 
 
 function App() {

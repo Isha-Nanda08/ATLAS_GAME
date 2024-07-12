@@ -105,6 +105,11 @@ export default function LoginPage({socket, setCurrPage, roomId, extra, userId}) 
         </form>
         <p className="error"> {extra.error} </p>
     </div>
+
+    <div className="cc"
+        onClick={() => window.open('https://opengameart.org/content/platformer-game-music-pack', '_blank')}>
+        Music By: CodeManu [https://opengameart.org/content/platformer-game-music-pack]
+    </div>
 </section>
 </>
 }
