@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './lobby.css'
-export default function WinnerPage({ socket, setCurrPage, roomId, userId }) {
+export default function WinnerPage({ socket, setCurrPage, roomId, userId, setRoomId }) {
     const [{ roomName, roomStatus, allPlayers, livePlayers, creator }, setGameData] = useState({
         roomName : '',
         roomStatus : true,
@@ -9,12 +9,22 @@ export default function WinnerPage({ socket, setCurrPage, roomId, userId }) {
         creator: {id: '', name: ''}
     })
 
-    if (roomId === -1) {
-        setCurrPage('login-page')
-    } else if (!roomStatus) {
-        setCurrPage('game-lobby')
-    } else if (livePlayers.length != 1) {
-        setCurrPage('game-page')
+    useEffect(() => {
+        if (roomId === -1) {
+            setCurrPage('login-page')
+        } else if (!roomStatus) {
+            setCurrPage('game-lobby')
+        } else if (livePlayers.length != 1) {
+            setCurrPage('game-page')
+        }
+    }, [roomId, roomStatus, livePlayers])
+
+    const playAgain = () => {
+        socket.emit('restart-room')
+    }
+    const leaveRoom = () => {
+        socket.emit('leave-running-room')
+        setRoomId(-1)
     }
 
     useEffect(() => {
@@ -26,7 +36,11 @@ export default function WinnerPage({ socket, setCurrPage, roomId, userId }) {
             console.log('recieved game info')
             setGameData(data)
         })
-    }, [socket])
+
+        return () => {
+            socket.off('running-game-info')
+        }
+    }, [socket, userId])
 
     return <>
     <section id="lobby-section">
@@ -91,8 +105,11 @@ export default function WinnerPage({ socket, setCurrPage, roomId, userId }) {
             </div>
 
             <div className="button-container">
-                <button className="btn">Play Again</button>
-                <button className="btn">Leave Room</button>
+                { 
+                    userId === creator.id && 
+                    <button className="btn" onClick={() => playAgain()}>Play Again</button>
+                }
+                <button className="btn" onClick={() => leaveRoom()}>Leave Room</button>
             </div>
             <p className="error">
                 {/* {errTxt} */}

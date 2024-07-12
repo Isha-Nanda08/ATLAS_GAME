@@ -10,11 +10,13 @@ export default function GameLobby({ socket, setCurrPage, roomId, userId, setRoom
         roomStatus: false
     })
     const [error, setError] = useState('')
-    if (roomStatus) {
-        setCurrPage('game-page')
-    } else if (roomId == -1) {
-        setCurrPage('login-page')
-    }
+    useEffect(() => {
+        if (roomStatus) {
+            setCurrPage('game-page')
+        } else if (roomId == -1) {
+            setCurrPage('login-page')
+        }
+    }, [roomStatus, roomId])
 
     const startRoom = () => {
         socket.emit('start-room', { userId })
@@ -39,7 +41,12 @@ export default function GameLobby({ socket, setCurrPage, roomId, userId, setRoom
                 setError(data.error)
             })
         }
-    }, [socket])
+        return () => {
+            socket.off('room-lobby-data')
+            socket.off('your-room-started')
+            socket.off('unable-to-start-room')
+        }
+    }, [socket, userId])
     return <>
     <section id="lobby-section">
     <>

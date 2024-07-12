@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './game-page.css'
 export default function GamePage({socket, setCurrPage, roomId, userId}) {
-    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog, prevAns }, setGameData] = useState({
+    const [{ roomName, roomStatus, allPlayers, livePlayers, currPlayerId, roomLog, prevAns, remainingTime }, setGameData] = useState({
         roomName : '',
         roomStatus : true,
         allPlayers : [],
@@ -9,16 +9,18 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
         currPlayerId : '',
         roomLog : [],
         prevAns : '',
-        // TODO:  also ask: remaining time
+        remainingTime: 0
     })
 
-    if (roomId === -1) {
-        setCurrPage('login-page')
-    } else if (!roomStatus) {
-        setCurrPage('game-lobby')
-    } else if (livePlayers.length == 1) {
-        setCurrPage('winner-page')
-    }
+    useEffect(() => {
+        if (roomId === -1) {
+            setCurrPage('login-page')
+        } else if (!roomStatus) {
+            setCurrPage('game-lobby')
+        } else if (livePlayers.length == 1) {
+            setCurrPage('winner-page')
+        }
+    }, [roomId, roomStatus, livePlayers])
 
     const sendAns = (event) => {
         event.preventDefault()
@@ -32,28 +34,50 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
         socket.emit('get-game-hint', { userId })
     }
     useEffect(() => {
-        console.log('sending game data reuest to server')
+        if (socket) {
+            console.log('sending game data reuest to server')
+            
+            socket.emit('get-running-game-info', { userId })
+    
+            socket.on('running-game-info', data => {
+                console.log('recieved game info')
+                setGameData(data)
+            })
+    
+            socket.on('your-game-hint', data => {
+                console.log('hint received: ', data.ans)
+                alert(`your hint: ${data.ans}`);
+            })
+        }
         
-        socket.emit('get-running-game-info', { userId })
 
-        socket.on('running-game-info', data => {
-            console.log('recieved game info')
-            setGameData(data)
-        })
+        return () => {
+            if (socket) {
+                socket.off('running-game-info');
+                socket.off('your-game-hint');
+            }
+        };
+    }, [socket, userId])
 
-        socket.on('your-game-hint', data => {
-            console.log('hint received: ', data.ans)
-            alert(`your hint: ${data.ans}`);
-        })
-        // const timerDiv = document.querySelector('.timer')
-        // const intervalId = setInterval(() => {
-        //     timerDiv.textContent = 'hllo this is time'
-        // }, 1000)
+    useEffect(() => {
+        const timerDiv = document.querySelector('.timer span')
+        let time = remainingTime;
+        const updateTimer = () => {
+            if (time >= 0) {
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                timerDiv.textContent = ` ${minutes} : ${seconds < 10 ? '0' : ''}${seconds}`;
+                time -= 1;
+            } else {
+                clearInterval(intervalId);
+            }
+        };
+        const intervalId = setInterval(updateTimer, 1000);
+        updateTimer();
 
-        // return () => {
-        //     clearInterval(intervalId)
-        // }
-    }, [socket])
+        return () => clearInterval(intervalId);
+    }, [remainingTime, roomLog])
+
     return <>
     <section id="game">
         <div id="room-name">
@@ -101,8 +125,8 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
                 <div className='float-box'>
                     <h2 className="title">Room History</h2>
                     <ul>
-                    { roomLog.map(log => (
-                            <li>{log}</li>
+                    { roomLog.map((log, index) => (
+                            <li key={index}>{log}</li>
                     ))}
                     </ul>
                 </div>
@@ -112,7 +136,7 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
                     <span className="currentWord">current letter: <span>{prevAns.charAt(prevAns.length - 1)}</span></span>
                     <span className="timer">time left: <span>15:00</span></span>
                     {
-                        userId === currPlayerId? 
+                        userId === currPlayerId && remainingTime - 2 >= 0? 
                         <>
                             <div className="input-box">
                                 <input type="text" name="answer" id="answer" required />

@@ -41,7 +41,7 @@ function App() {
         })
 
         newSocket.on('your-room-id', (data) => {
-            console.log('joined/created room id given by server', data);
+            // console.log('joined/created room id given by server', data);
             if (data.roomId == -1) {
                 setExtra({ error: data.error })
             } else {
@@ -71,7 +71,7 @@ function App() {
             case 'game-lobby':
                 return <GameLobby {...props} setRoomId={setRoomId} />
             case 'winner-page':
-                return <WinnerPage {...props} />
+                return <WinnerPage {...props} setRoomId={setRoomId} />
             case 'game-page':
                 return <GamePage {...props} />
             default:
