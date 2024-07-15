@@ -12,6 +12,8 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
         remainingTime: 0, 
         currPlayerHints: 0
     })
+    let ansGiven = false;
+    let requestedHint = false;
 
     useEffect(() => {
         if (roomId === -1) {
@@ -25,14 +27,19 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
 
     const sendAns = (event) => {
         event.preventDefault()
+        if (ansGiven) return;
         const ans = document.getElementById("answer").value;
         if (ans != '') {
             socket.emit('my-game-input', { ans, userId })
+            ansGiven = true;
         }
     }
     const getHint = () => {
-        console.log('sending hint request to user')
-        socket.emit('get-game-hint', { userId })
+        if (currPlayerHints > 0 && !requestedHint) {
+            console.log('sending hint request to user')
+            socket.emit('get-game-hint', { userId })
+            requestedHint = true;
+        }
     }
     useEffect(() => {
         if (socket) {
@@ -62,7 +69,7 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
 
     useEffect(() => {
         const timerDiv = document.querySelector('.timer span')
-        let time = remainingTime;
+        let time = remainingTime - 2;
         const updateTimer = () => {
             if (time >= 0) {
                 const minutes = Math.floor(time / 60);
@@ -84,21 +91,6 @@ export default function GamePage({socket, setCurrPage, roomId, userId}) {
         <div id="room-name">
             <h1 className="title">{ roomName }</h1>
         </div>
-        {/* <ul id="game-player-list">
-            { allPlayers.map((player) => {
-                let className = '';
-                if (player.id === currPlayerId) {
-                    className = 'current'
-                } else if (!livePlayers.some(user => user.id === player.id)) {
-                    className = 'dead'
-                }
-                return <li key={player.id} className={className}>
-                    <span className="name">{player.name}</span>
-                    <span className="lives">lives: {player.lives}</span>
-                    <span className="hints">hints: {player.hints}</span>
-                </li>
-            }) }
-        </ul> */}
         <div className="game-container">
             <div className="left">
                 <div className='float-box'>

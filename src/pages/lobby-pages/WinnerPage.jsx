@@ -20,10 +20,10 @@ export default function WinnerPage({ socket, setCurrPage, roomId, userId, setRoo
     }, [roomId, roomStatus, livePlayers])
 
     const playAgain = () => {
-        socket.emit('restart-room')
+        socket.emit('restart-room', { userId })
     }
     const leaveRoom = () => {
-        socket.emit('leave-running-room')
+        socket.emit('leave-running-room', { userId })
         setRoomId(-1)
     }
 
@@ -33,7 +33,8 @@ export default function WinnerPage({ socket, setCurrPage, roomId, userId, setRoo
         socket.emit('get-running-game-info', { userId })
 
         socket.on('running-game-info', data => {
-            console.log('recieved game info')
+            console.log('recieved running-game-info')
+            console.log(data.creator)
             setGameData(data)
         })
 
