@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# Atlas Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the source code for the **Atlas Game**, a React-based web application that allows players to engage in a game of Atlas. The game communicates with a custom-built server via [Socket.IO](https://socket.io/) and uses an API, also created by me, to fetch location data.
 
-## Available Scripts
+## Live Demo
 
-In the project directory, you can run:
+You can play the game live at: [Atlas Game](https://atlas-game.vercel.app)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Real-Time Gameplay**: Communicates with the server using Socket.IO to provide a seamless real-time gaming experience.
+- **Multiple Rooms**: Players can create and join multiple game rooms, each running independently.
+- **Bot Integration**: Rooms can include up to 1 bot with adjustable difficulty, providing a challenging experience even in solo play.
+- **Custom API**: The game fetches location data from a custom-built API to enhance gameplay.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Technologies Used
 
-### `npm test`
+- **React**: For building the user interface.
+- **Socket.IO**: For real-time communication between the client and server.
+- **Custom API**: Provides location data for the game.
+- **Vercel**: The game is deployed and hosted on Vercel.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## How to Play
 
-### `npm run build`
+1. **Create or Join a Room**: Players can create a new room or join an existing one.
+2. **Invite Friends or Play with a Bot**: Invite friends to the room or add a bot to challenge yourself.
+3. **Start the Game**: Once all players are ready, the game can begin.
+4. **Gameplay**: Players take turns naming places starting with the last letter of the previous place. The game continues until no player remains.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Thank you for checking out the Atlas Game! If you enjoy the game, please consider giving the repository a star ⭐.
