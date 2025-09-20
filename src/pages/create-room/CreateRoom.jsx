@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './create-room.css'
 export default function CreateRoom({socket, setCurrPage, roomId, extra, userId}) {
-    if (roomId !== -1) {
-        setCurrPage('game-lobby')
-    }
+    useEffect(() => {
+        if (roomId !== -1) {
+            setCurrPage('game-lobby')
+        }
+    }, [roomId])
+    
     const [needBot, setNeedBot] = useState(false);
 
     const createRoom = (event) => {
@@ -24,12 +27,6 @@ export default function CreateRoom({socket, setCurrPage, roomId, extra, userId})
             socket.emit('create-new-room', {...data, userId})
         }
     }
-
-    // useEffect(()=> {
-    //     if (socket) {
-            
-    //     }
-    // }, [socket])
     
     return <>
         <section id="create-room-section">
@@ -91,12 +88,12 @@ export default function CreateRoom({socket, setCurrPage, roomId, extra, userId})
                         {/* <i> <input type="checkbox" id="publicRoom" name="publicRoom" /> Do you want to make room public?</i> */}
                         <i> 
                             <input type="checkbox" id="enableBot" name="enableBot" checked={needBot} onClick={(e) => { setNeedBot(!needBot) }} /> 
-                            <label for="enableBot"> Do you want to include bot?</label>
+                            <label htmlFor="enableBot"> Do you want to include bot?</label>
                         </i>
                     </div>
 
                     <div className={needBot? "input-box" : "hide input-box"}>
-                        <input type="text" id="botDifficulty" min="1" max="100" required /> <strong>Difficulty (in %)</strong>
+                        <input type="text" autoComplete='off' id="botDifficulty" min="1" max="100" required /> <strong>Difficulty (in %)</strong>
                     </div>
 
                     <div className="button-container">

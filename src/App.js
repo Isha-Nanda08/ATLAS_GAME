@@ -7,7 +7,9 @@ import GameLobby from './pages/lobby-pages/GameLobby';
 import WinnerPage from './pages/lobby-pages/WinnerPage';
 import GamePage from './pages/game-page/GamePage';
 
-const SOCKET_SERVER_URL = 'http://localhost:3090'; // Replace with your server URL
+const SOCKET_SERVER_URL = 'https://atlas-server-izkd.onrender.com'; // Replace with your server URL
+// const SOCKET_SERVER_URL = 'https://atlas-server-ecru.vercel.app'; // Replace with your server URL
+// const SOCKET_SERVER_URL = 'http://localhost:3090'; // Replace with your server URL
 
 
 function App() {
@@ -41,7 +43,7 @@ function App() {
         })
 
         newSocket.on('your-room-id', (data) => {
-            console.log('joined/created room id given by server', data);
+            // console.log('joined/created room id given by server', data);
             if (data.roomId == -1) {
                 setExtra({ error: data.error })
             } else {
@@ -71,7 +73,7 @@ function App() {
             case 'game-lobby':
                 return <GameLobby {...props} setRoomId={setRoomId} />
             case 'winner-page':
-                return <WinnerPage {...props} />
+                return <WinnerPage {...props} setRoomId={setRoomId} />
             case 'game-page':
                 return <GamePage {...props} />
             default:

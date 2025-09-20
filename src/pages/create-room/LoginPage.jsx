@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import './create-room.css'
 
 export default function LoginPage({socket, setCurrPage, roomId, extra, userId}) {
-    if (roomId !== -1) {
-        setCurrPage('game-lobby');
-    }
+    useEffect(() => {
+        if (roomId !== -1) {
+            setCurrPage('game-lobby');
+        }
+    }, [roomId])
     const [room, setRoom] = useState('');
     const [roomList, setRoomList] = useState([]);
 
@@ -14,6 +16,12 @@ export default function LoginPage({socket, setCurrPage, roomId, extra, userId}) 
             socket.on('room-list', (data) => {
                 setRoomList(data);
             })
+        }
+
+        return () => {
+            if (socket) {
+                socket.off('room-list')
+            }
         }
     }, [socket, userId])
 
@@ -96,6 +104,11 @@ export default function LoginPage({socket, setCurrPage, roomId, extra, userId}) 
             <button className="btn-link" onClick={() => setCurrPage("create-room")}>Create Room</button>
         </form>
         <p className="error"> {extra.error} </p>
+    </div>
+
+    <div className="cc"
+        onClick={() => window.open('https://opengameart.org/content/platformer-game-music-pack', '_blank')}>
+        Music By: CodeManu [https://opengameart.org/content/platformer-game-music-pack]
     </div>
 </section>
 </>
